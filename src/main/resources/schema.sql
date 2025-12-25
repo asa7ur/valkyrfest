@@ -20,11 +20,11 @@ CREATE TABLE users
     id           BIGINT PRIMARY KEY AUTO_INCREMENT,
     email        VARCHAR(100) UNIQUE NOT NULL,
     password     VARCHAR(255)        NOT NULL,
-    enabled      BOOLEAN             NOT NULL DEFAULT TRUE,
+    enabled      BOOLEAN   DEFAULT TRUE,
     first_name   VARCHAR(100)        NOT NULL,
     last_name    VARCHAR(100)        NOT NULL,
     phone        VARCHAR(30)         NOT NULL,
-    created_date TIMESTAMP                    DEFAULT CURRENT_TIMESTAMP
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE roles
