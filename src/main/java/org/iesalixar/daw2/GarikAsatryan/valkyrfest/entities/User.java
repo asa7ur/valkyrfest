@@ -61,7 +61,7 @@ public class User {
     @Column(name = "created_date", insertable = false, updatable = false)
     private LocalDateTime createdDate;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),

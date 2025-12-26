@@ -1,10 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title th:text="#{msg.order.title}">Finalizar Compra</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-<body>
+<body class="bg-light">
+<div class="container py-5">
+    <h1 class="mb-4" th:text="#{msg.order.title}">Finalizar Compra</h1>
 
+    <form th:action="@{/orders/checkout}" th:object="${orderRequest}" method="post" class="needs-validation">
+        <input type="hidden" name="userId" value="1"/>
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Entradas</h3>
+            </div>
+            <div class="card-body">
+                <p th:if="${#fields.hasErrors('tickets')}" th:errors="*{tickets}" class="text-danger"></p>
+
+                <div th:each="ticket, stat : *{tickets}" class="border-bottom pb-3 mb-3">
+                    <h5 th:text="'Asistente ' + (${stat.index} + 1)"></h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" th:field="*{tickets[__${stat.index}__].firstName}" class="form-control"/>
+                            <div class="text-danger"
+                                 th:if="${#fields.hasErrors('tickets[__${stat.index}__].firstName')}"
+                                 th:errors="*{tickets[__${stat.index}__].firstName}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Apellido</label>
+                            <input type="text" th:field="*{tickets[__${stat.index}__].lastName}" class="form-control"/>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Tipo de Documento</label>
+                            <select th:field="*{tickets[__${stat.index}__].documentType}" class="form-select">
+                                <option th:each="type : ${T(org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.DocumentType).values()}"
+                                        th:value="${type}" th:text="${type}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Número Documento</label>
+                            <input type="text" th:field="*{tickets[__${stat.index}__].documentNumber}"
+                                   class="form-control"/>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Fecha Nacimiento</label>
+                            <input type="date" th:field="*{tickets[__${stat.index}__].birthDate}" class="form-control"/>
+                            <div class="text-danger"
+                                 th:if="${#fields.hasErrors('tickets[__${stat.index}__].birthDate')}"
+                                 th:errors="*{tickets[__${stat.index}__].birthDate}"></div>
+                        </div>
+                        <input type="hidden" th:field="*{tickets[__${stat.index}__].ticketTypeId}" value="1"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-success btn-lg">Realizar Pedido</button>
+        </div>
+    </form>
+</div>
 </body>
 </html>
