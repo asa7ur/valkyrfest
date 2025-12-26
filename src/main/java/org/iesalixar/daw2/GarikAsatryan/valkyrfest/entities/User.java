@@ -26,35 +26,35 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "{msg.user.email.notEmpty}")
-    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$", message = "{msg.user.email.notValid}")
-    @Size(max = 100, message = "{msg.user.email.size}")
+    @NotEmpty(message = "{msg.validation.required}")
+    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$", message = "{msg.validation.email}")
+    @Size(max = 100, message = "{msg.validation.size}")
     @Column(name = "email", unique = true, nullable = false, length = 100)
     private String email;
 
-    @NotEmpty(message = "{msg.user.password.notEmpty}")
+    @NotEmpty(message = "{msg.validation.required}")
     @Column(name = "password", nullable = false)
     private String password;
 
     private boolean enabled;
 
-    @NotEmpty(message = "{msg.user.firstName.notEmpty}")
-    @Size(max = 100, message = "{msg.user.firstName.size}")
+    @NotEmpty(message = "{msg.validation.required}")
+    @Size(max = 100, message = "{msg.validation.size}")
     @Column(name = "first_name", nullable = false, length = 100)
     private String firstName;
 
-    @NotEmpty(message = "{msg.user.lastName.notEmpty}")
-    @Size(max = 100, message = "{msg.user.lastName.size}")
+    @NotEmpty(message = "{msg.validation.required}")
+    @Size(max = 100, message = "{msg.validation.size}")
     @Column(name = "last_name", nullable = false, length = 100)
     private String lastName;
 
-    @NotNull(message = "{msg.user.birthDate.notNull}")
-    @IsAdult
+    @NotNull(message = "{msg.validation.required}")
+    @IsAdult // Este ya usa su propia clave {msg.notAdult} por defecto
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
-    @NotEmpty(message = "{msg.user.phone.notEmpty}")
-    @Size(max = 30, message = "{msg.user.phone.size}")
+    @NotEmpty(message = "{msg.validation.required}")
+    @Size(max = 30, message = "{msg.validation.size}")
     @Column(name = "phone", nullable = false, length = 30)
     private String phone;
 

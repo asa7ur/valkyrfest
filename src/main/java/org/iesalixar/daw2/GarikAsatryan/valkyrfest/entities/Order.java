@@ -26,8 +26,8 @@ public class Order {
     @Column(name = "order_date", insertable = false, updatable = false)
     private LocalDateTime orderDate;
 
-    @NotNull(message = "{msg.order.totalPrice.notNull}")
-    @PositiveOrZero(message = "{msg.order.totalPrice.positive}")
+    @NotNull(message = "{msg.validation.required}")
+    @PositiveOrZero(message = "{msg.validation.positive}")
     @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPrice;
 

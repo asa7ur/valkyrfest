@@ -21,8 +21,8 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "{msg.role.name.notEmpty}")
-    @Size(max = 50, message = "{msg.role.name.size}")
+    @NotEmpty(message = "{msg.validation.required}")
+    @Size(max = 50, message = "{msg.validation.size}")
     @Column(name = "name", nullable = false)
     private String name;
 

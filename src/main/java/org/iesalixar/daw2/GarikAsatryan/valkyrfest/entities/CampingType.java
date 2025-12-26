@@ -19,30 +19,30 @@ import java.math.BigDecimal;
 @FieldsComparison(
         first = "stockAvailable",
         second = "stockTotal",
-        message = "{msg.campingType.stock.invalid}"
+        message = "{msg.validation.comparison.invalid}"
 )
 public class CampingType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "{msg.campingType.name.notBlank}")
-    @Size(max = 50, message = "{msg.campingType.name.size}")
+    @NotBlank(message = "{msg.validation.required}")
+    @Size(max = 50, message = "{msg.validation.size}")
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @NotNull(message = "{msg.campingType.price.notNull}")
-    @PositiveOrZero(message = "{msg.campingType.price.positive}")
+    @NotNull(message = "{msg.validation.required}")
+    @PositiveOrZero(message = "{msg.validation.positive}")
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @NotNull(message = "{msg.campingType.stockTotal.notNull}")
-    @PositiveOrZero(message = "{msg.campingType.stockTotal.positive}")
+    @NotNull(message = "{msg.validation.required}")
+    @PositiveOrZero(message = "{msg.validation.positive}")
     @Column(name = "stock_total", nullable = false)
     private Integer stockTotal;
 
-    @NotNull(message = "{msg.campingType.stockAvailable.notNull}")
-    @PositiveOrZero(message = "{msg.campingType.stockAvailable.positive}")
+    @NotNull(message = "{msg.validation.required}")
+    @PositiveOrZero(message = "{msg.validation.positive}")
     @Column(name = "stock_available", nullable = false)
     private Integer stockAvailable;
 }
