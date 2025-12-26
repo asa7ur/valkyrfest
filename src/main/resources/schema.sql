@@ -23,6 +23,7 @@ CREATE TABLE users
     enabled      BOOLEAN   DEFAULT TRUE,
     first_name   VARCHAR(100)        NOT NULL,
     last_name    VARCHAR(100)        NOT NULL,
+    birth_date   DATE                NOT NULL,
     phone        VARCHAR(30)         NOT NULL,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -64,16 +65,16 @@ CREATE TABLE ticket_types
 
 CREATE TABLE tickets
 (
-    id                       BIGINT AUTO_INCREMENT PRIMARY KEY,
-    attendee_name            VARCHAR(100)                    NOT NULL,
-    attendee_last_name       VARCHAR(100)                    NOT NULL,
-    attendee_document_type   ENUM ('DNI', 'NIE', 'PASSPORT') NOT NULL,
-    attendee_document_number VARCHAR(20)                     NOT NULL,
-    attendee_birth_date      DATE                            NOT NULL,
-    qr_code                  VARCHAR(255) UNIQUE,
-    status                   ENUM ('ACTIVE', 'USED', 'CANCELLED') DEFAULT 'ACTIVE',
-    ticket_type_id           BIGINT,
-    order_id                 BIGINT,
+    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    first_name      VARCHAR(100)                    NOT NULL,
+    last_name       VARCHAR(100)                    NOT NULL,
+    document_type   ENUM ('DNI', 'NIE', 'PASSPORT') NOT NULL,
+    document_number VARCHAR(20)                     NOT NULL,
+    birth_date      DATE                            NOT NULL,
+    qr_code         VARCHAR(255) UNIQUE,
+    status          ENUM ('ACTIVE', 'USED', 'CANCELLED') DEFAULT 'ACTIVE',
+    ticket_type_id  BIGINT,
+    order_id        BIGINT,
     FOREIGN KEY (ticket_type_id) REFERENCES ticket_types (id),
     FOREIGN KEY (order_id) REFERENCES orders (id)
 );
@@ -89,13 +90,16 @@ CREATE TABLE camping_types
 
 CREATE TABLE campings
 (
-    id                       BIGINT AUTO_INCREMENT PRIMARY KEY,
-    attendee_name            VARCHAR(100) NOT NULL,
-    attendee_document_number VARCHAR(20)  NOT NULL,
-    qr_code                  VARCHAR(255) UNIQUE,
-    status                   ENUM ('ACTIVE', 'USED', 'CANCELLED') DEFAULT 'ACTIVE',
-    camping_type_id          BIGINT,
-    order_id                 BIGINT,
+    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    first_name      VARCHAR(100)                    NOT NULL,
+    last_name       VARCHAR(100)                    NOT NULL,
+    document_type   ENUM ('DNI', 'NIE', 'PASSPORT') NOT NULL,
+    document_number VARCHAR(20)                     NOT NULL,
+    birth_date      DATE                            NOT NULL,
+    qr_code         VARCHAR(255) UNIQUE,
+    status          ENUM ('ACTIVE', 'USED', 'CANCELLED') DEFAULT 'ACTIVE',
+    camping_type_id BIGINT,
+    order_id        BIGINT,
     FOREIGN KEY (camping_type_id) REFERENCES camping_types (id),
     FOREIGN KEY (order_id) REFERENCES orders (id)
 );
