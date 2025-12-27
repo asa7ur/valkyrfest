@@ -108,18 +108,18 @@ CREATE TABLE campings
 CREATE TABLE sponsors
 (
     id           BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name         VARCHAR(100),
-    phone        VARCHAR(20),
-    email        VARCHAR(100),
-    contribution DECIMAL(10, 2),
+    name         VARCHAR(100)   NOT NULL UNIQUE,
+    phone        VARCHAR(20)    NOT NULL,
+    email        VARCHAR(100)   NOT NULL,
+    contribution DECIMAL(10, 2) NOT NULL,
     image        VARCHAR(255)
 );
 
 CREATE TABLE stages
 (
     id       BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name     VARCHAR(100),
-    capacity BIGINT
+    name     VARCHAR(100) NOT NULL UNIQUE,
+    capacity BIGINT       NOT NULL
 );
 
 CREATE TABLE sponsor_stage
@@ -134,11 +134,11 @@ CREATE TABLE sponsor_stage
 CREATE TABLE artists
 (
     id      BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name    VARCHAR(100),
-    phone   VARCHAR(20),
-    email   VARCHAR(100),
-    genre   VARCHAR(100),
-    country VARCHAR(100)
+    name    VARCHAR(100) NOT NULL UNIQUE,
+    phone   VARCHAR(20)  NOT NULL,
+    email   VARCHAR(100) NOT NULL,
+    genre   VARCHAR(100) NOT NULL,
+    country VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE performances
