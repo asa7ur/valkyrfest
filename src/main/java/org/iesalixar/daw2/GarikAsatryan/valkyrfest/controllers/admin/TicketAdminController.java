@@ -1,0 +1,87 @@
+package org.iesalixar.daw2.GarikAsatryan.valkyrfest.controllers.admin;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.DocumentType;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.Ticket;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.TicketStatus;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.OrderService;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.TicketService;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.TicketTypeService;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequestMapping("/admin/festival/tickets")
+@RequiredArgsConstructor
+public class TicketAdminController {
+
+    private final TicketService ticketService;
+    private final TicketTypeService ticketTypeService;
+    private final OrderService orderService;
+    private final MessageSource messageSource;
+
+    @GetMapping
+    public String listTickets(Model model) {
+        model.addAttribute("tickets", ticketService.getAllTickets());
+        model.addAttribute("activePage", "tickets");
+        return "admin/tickets/list";
+    }
+
+    @GetMapping("/new")
+    public String showCreateForm(Model model) {
+        model.addAttribute("ticket", new Ticket());
+        populateFormModels(model);
+        return "admin/tickets/form";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        ticketService.getTicketById(id).ifPresent(t -> model.addAttribute("ticket", t));
+        populateFormModels(model);
+        return "admin/tickets/form";
+    }
+
+    @PostMapping("/save")
+    public String saveTicket(
+            @Valid @ModelAttribute("ticket") Ticket ticket,
+            BindingResult result,
+            RedirectAttributes redirectAttributes,
+            Model model
+    ) {
+        if (result.hasErrors()) {
+            populateFormModels(model);
+            return "admin/tickets/form";
+        }
+
+        ticketService.saveTicket(ticket);
+
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("msg.admin.ticket.save.success", null, LocaleContextHolder.getLocale()));
+
+        return "redirect:/admin/festival/tickets";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteTicket(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        ticketService.deleteTicket(id);
+
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("msg.admin.ticket.delete.success", null, LocaleContextHolder.getLocale()));
+
+        return "redirect:/admin/festival/tickets";
+    }
+
+    private void populateFormModels(Model model) {
+        model.addAttribute("ticketTypes", ticketTypeService.getAllTicketTypes());
+        model.addAttribute("orders", orderService.getAllOrders());
+        model.addAttribute("docTypes", DocumentType.values());
+        model.addAttribute("statuses", TicketStatus.values());
+        model.addAttribute("activePage", "tickets");
+    }
+}

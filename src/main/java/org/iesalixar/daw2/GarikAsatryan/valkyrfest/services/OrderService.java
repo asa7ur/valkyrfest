@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,22 +26,34 @@ public class OrderService {
     private final TicketTypeRepository ticketTypeRepository;
     private final CampingTypeRepository campingTypeRepository;
 
-    /**
-     * Crea un pedido completo procesando entradas y camping.
-     */
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
+    public Optional<Order> getOrderById(Long id) {
+        return orderRepository.findById(id);
+    }
+
     @Transactional
-    public Order createOrder(OrderRequestDTO request) {
-        // Validar que el usuario existe
+    public void saveOrder(Order order) {
+        orderRepository.save(order);
+    }
+
+    @Transactional
+    public void deleteOrder(Long id) {
+        orderRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void createOrder(OrderRequestDTO request) {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new AppException("msg.error.userNotFound"));
 
-        // Crear la instancia del pedido
         Order order = new Order();
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
         BigDecimal totalPrice = BigDecimal.ZERO;
 
-        // Procesar los tickets
         for (TicketRequestDTO ticketDto : request.getTickets()) {
             TicketType type = ticketTypeRepository.findById(ticketDto.getTicketTypeId())
                     .orElseThrow(() -> new AppException("msg.error.ticketTypeNotFound"));
@@ -48,29 +62,25 @@ public class OrderService {
                 throw new AppException("msg.error.noStock", type.getName());
             }
 
-            // Actualizar el stock
             type.setStockAvailable(type.getStockAvailable() - 1);
             ticketTypeRepository.save(type);
 
-            // Crear entidad Ticket
             Ticket ticket = new Ticket();
             ticket.setFirstName(ticketDto.getFirstName());
             ticket.setLastName(ticketDto.getLastName());
             ticket.setDocumentType(ticketDto.getDocumentType());
             ticket.setDocumentNumber(ticketDto.getDocumentNumber());
             ticket.setBirthDate(ticketDto.getBirthDate());
-            ticket.setQrCode(UUID.randomUUID().toString()); // Genero un código único
+            ticket.setQrCode(UUID.randomUUID().toString());
             ticket.setTicketType(type);
             ticket.setOrder(order);
             ticket.setStatus(TicketStatus.ACTIVE);
 
-            // Añadir a la lista del ppedido y sumar al precio total
             order.getTickets().add(ticket);
             totalPrice = totalPrice.add(type.getPrice());
         }
 
         if (request.getCampings() != null && !request.getCampings().isEmpty()) {
-            // Procesar los campings
             for (CampingRequestDTO campingDto : request.getCampings()) {
                 CampingType type = campingTypeRepository.findById(campingDto.getCampingTypeId())
                         .orElseThrow(() -> new AppException("msg.error.campingTypeNotFound"));
@@ -79,11 +89,9 @@ public class OrderService {
                     throw new AppException("msg.error.noStock", type.getName());
                 }
 
-                // Actualizar el stock
                 type.setStockAvailable(type.getStockAvailable() - 1);
                 campingTypeRepository.save(type);
 
-                // Crear entidad Camping
                 Camping camping = new Camping();
                 camping.setFirstName(campingDto.getFirstName());
                 camping.setLastName(campingDto.getLastName());
@@ -95,14 +103,12 @@ public class OrderService {
                 camping.setOrder(order);
                 camping.setStatus(TicketStatus.ACTIVE);
 
-                // Añadir a la lista del ppedido y sumar al precio total
                 order.getCampings().add(camping);
                 totalPrice = totalPrice.add(type.getPrice());
             }
         }
 
         order.setTotalPrice(totalPrice);
-
-        return orderRepository.save(order);
+        orderRepository.save(order);
     }
 }

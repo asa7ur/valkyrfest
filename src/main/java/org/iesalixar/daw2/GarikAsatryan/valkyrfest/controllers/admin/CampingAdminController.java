@@ -1,0 +1,87 @@
+package org.iesalixar.daw2.GarikAsatryan.valkyrfest.controllers.admin;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.Camping;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.DocumentType;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.TicketStatus;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.CampingService;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.CampingTypeService;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.OrderService;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequestMapping("/admin/festival/campings")
+@RequiredArgsConstructor
+public class CampingAdminController {
+
+    private final CampingService campingService;
+    private final CampingTypeService campingTypeService;
+    private final OrderService orderService;
+    private final MessageSource messageSource;
+
+    @GetMapping
+    public String listCampings(Model model) {
+        model.addAttribute("campings", campingService.getAllCampings());
+        model.addAttribute("activePage", "campings");
+        return "admin/campings/list";
+    }
+
+    @GetMapping("/new")
+    public String showCreateForm(Model model) {
+        model.addAttribute("camping", new Camping());
+        populateFormModels(model);
+        return "admin/campings/form";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        campingService.getCampingById(id).ifPresent(c -> model.addAttribute("camping", c));
+        populateFormModels(model);
+        return "admin/campings/form";
+    }
+
+    @PostMapping("/save")
+    public String saveCamping(
+            @Valid @ModelAttribute("camping") Camping camping,
+            BindingResult result,
+            RedirectAttributes redirectAttributes,
+            Model model
+    ) {
+        if (result.hasErrors()) {
+            populateFormModels(model);
+            return "admin/campings/form";
+        }
+
+        campingService.saveCamping(camping);
+
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("msg.admin.camping.save.success", null, LocaleContextHolder.getLocale()));
+
+        return "redirect:/admin/festival/campings";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteCamping(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        campingService.deleteCamping(id);
+
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("msg.admin.camping.delete.success", null, LocaleContextHolder.getLocale()));
+
+        return "redirect:/admin/festival/campings";
+    }
+
+    private void populateFormModels(Model model) {
+        model.addAttribute("campingTypes", campingTypeService.getAllCampingTypes());
+        model.addAttribute("orders", orderService.getAllOrders());
+        model.addAttribute("docTypes", DocumentType.values());
+        model.addAttribute("statuses", TicketStatus.values());
+        model.addAttribute("activePage", "campings");
+    }
+}

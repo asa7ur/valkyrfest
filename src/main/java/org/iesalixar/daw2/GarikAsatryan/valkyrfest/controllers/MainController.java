@@ -9,7 +9,6 @@ public class MainController {
 
     @GetMapping("/")
     public String index(Model model) {
-        // Podrías pasar atributos si quisieras mostrar algo dinámico
         return "index";
     }
 }
