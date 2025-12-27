@@ -1,10 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/layout :: head(title=${performance.id == null ? 'Nueva Presentación' : 'Editar Horario'})}"></head>
 <body>
+<div th:replace="~{admin/layout :: navbar}"></div>
 
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{admin/layout :: sidebar}"></div>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2" th:text="${performance.id == null ? 'Programar Nueva Presentación' : 'Ajustar Horario'}">
+                    Formulario de Presentación</h1>
+                <a th:href="@{/admin/festival/performances}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver al cronograma
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form th:action="@{/admin/festival/performances/save}" th:object="${performance}" method="post">
+                        <input type="hidden" th:field="*{id}"/>
+
+                        <div th:if="${#fields.hasErrors('global')}" class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <span th:errors="*{global}">Error de validación temporal</span>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="artist" class="form-label fw-bold">Artista / Banda</label>
+                                <select th:field="*{artist}" class="form-select" th:errorclass="is-invalid">
+                                    <option value="" th:text="'-- Selecciona un artista --'"></option>
+                                    <option th:each="a : ${artists}" th:value="${a.id}" th:text="${a.name}"></option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('artist')}"
+                                     th:errors="*{artist}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="stage" class="form-label fw-bold">Escenario</label>
+                                <select th:field="*{stage}" class="form-select" th:errorclass="is-invalid">
+                                    <option value="" th:text="'-- Selecciona un escenario --'"></option>
+                                    <option th:each="s : ${stages}" th:value="${s.id}"
+                                            th:text="${s.name} + ' (Cap: ' + ${s.capacity} + ')'"></option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('stage')}"
+                                     th:errors="*{stage}"></div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="startTime" class="form-label fw-bold">Fecha e Inicio</label>
+                                <input type="datetime-local" th:field="*{startTime}" class="form-control"
+                                       th:errorclass="is-invalid">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('startTime')}"
+                                     th:errors="*{startTime}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="endTime" class="form-label fw-bold">Fecha y Finalización</label>
+                                <input type="datetime-local" th:field="*{endTime}" class="form-control"
+                                       th:errorclass="is-invalid">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('endTime')}"
+                                     th:errors="*{endTime}"></div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a th:href="@{/admin/festival/performances}" class="btn btn-light border">Cancelar</a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-calendar-check me-1"></i>
+                                <span th:text="${performance.id == null ? 'Añadir al Cronograma' : 'Actualizar Horario'}">Guardar</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{admin/layout :: scripts}"></div>
 </body>
 </html>

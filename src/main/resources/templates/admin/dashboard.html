@@ -1,10 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/layout :: head(title='Dashboard')}"></head>
 <body>
+<div th:replace="~{admin/layout :: navbar}"></div>
 
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="~{admin/layout :: sidebar}"></div>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Dashboard</h1>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4 mb-4">
+                <div class="col">
+                    <div class="card h-100 border-primary shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-music-note-beamed fs-1 text-primary"></i>
+                            <h5 class="card-title mt-2">Artistas</h5>
+                            <p class="card-text display-6 fw-bold" th:text="${artistCount}">0</p>
+                            <a th:href="@{/admin/festival/artists}" class="btn btn-outline-primary btn-sm">Gestionar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card h-100 border-success shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-layers fs-1 text-success"></i>
+                            <h5 class="card-title mt-2">Escenarios</h5>
+                            <p class="card-text display-6 fw-bold" th:text="${stageCount}">0</p>
+                            <a th:href="@{/admin/festival/stages}" class="btn btn-outline-success btn-sm">Gestionar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card h-100 border-warning shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-calendar-event fs-1 text-warning"></i>
+                            <h5 class="card-title mt-2">Presentaciones</h5>
+                            <p class="card-text display-6 fw-bold" th:text="${performanceCount}">0</p>
+                            <a th:href="@{/admin/festival/performances}" class="btn btn-outline-warning btn-sm">Gestionar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card h-100 border-danger shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-people fs-1 text-danger"></i>
+                            <h5 class="card-title mt-2">Usuarios</h5>
+                            <p class="card-text display-6 fw-bold" th:text="${userCount}">0</p>
+                            <button class="btn btn-outline-danger btn-sm" disabled>Solo Admin</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5 mb-4 bg-light rounded-3 shadow-sm border">
+                <div class="container-fluid py-5 text-center">
+                    <h2 class="display-5 fw-bold">¡Bienvenido al Panel de Valkyrfest!</h2>
+                    <p class="fs-4">Desde aquí podrás gestionar toda la logística de tu festival vikingo. Utiliza el
+                        menú lateral para navegar entre las distintas secciones.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{admin/layout :: scripts}"></div>
 </body>
 </html>

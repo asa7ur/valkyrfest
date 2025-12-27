@@ -3,7 +3,9 @@ package org.iesalixar.daw2.GarikAsatryan.valkyrfest.controllers.admin;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.Performance;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.ArtistService;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.PerformanceService;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.StageService;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PerformanceAdminController {
     private final PerformanceService performanceService;
+    private final ArtistService artistService;
+    private final StageService stageService;
     private final MessageSource messageSource;
 
     /**
@@ -33,17 +37,31 @@ public class PerformanceAdminController {
     }
 
     /**
-     * Shows the form to edit an existing performance
+     * Shows the form to create a new performance
      */
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        performanceService.getPerformanceById(id).ifPresent(performance -> model.addAttribute("performance", performance));
+    @GetMapping("/new")
+    public String showCreateForm(Model model) {
+        model.addAttribute("performance", new Performance());
+        model.addAttribute("artists", artistService.getAllArtists());
+        model.addAttribute("stages", stageService.getAllStages());
         model.addAttribute("activePage", "performances");
         return "admin/performances/form";
     }
 
     /**
-     * Saves or updates an performance
+     * Shows the form to edit an existing performance
+     */
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        performanceService.getPerformanceById(id).ifPresent(p -> model.addAttribute("performance", p));
+        model.addAttribute("artists", artistService.getAllArtists());
+        model.addAttribute("stages", stageService.getAllStages());
+        model.addAttribute("activePage", "performances");
+        return "admin/performances/form";
+    }
+
+    /**
+     * Saves or updates a performance
      */
     @PostMapping("/save")
     public String savePerformance(
@@ -53,6 +71,8 @@ public class PerformanceAdminController {
             Model model
     ) {
         if (result.hasErrors()) {
+            model.addAttribute("artists", artistService.getAllArtists());
+            model.addAttribute("stages", stageService.getAllStages());
             model.addAttribute("activePage", "performances");
             return "admin/performances/form";
         }
@@ -66,7 +86,7 @@ public class PerformanceAdminController {
     }
 
     /**
-     * Deletes an performance by its ID
+     * Deletes a performance by its ID
      */
     @GetMapping("/delete/{id}")
     public String deletePerformance(@PathVariable Long id, RedirectAttributes redirectAttributes) {
