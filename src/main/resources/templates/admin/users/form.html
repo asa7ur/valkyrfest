@@ -13,14 +13,14 @@
                 <h1 class="h2"
                     th:text="${user.id == null} ? #{msg.admin.users.form.header.new} : #{msg.admin.users.form.header.edit}">
                     User Form</h1>
-                <a th:href="@{/admin/users}" class="btn btn-sm btn-outline-secondary">
+                <a th:href="@{/admin/festival/users}" class="btn btn-sm btn-outline-secondary">
                     <i class="bi bi-arrow-left"></i> <span th:text="#{msg.admin.back_to_list}">Back to list</span>
                 </a>
             </div>
 
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
-                    <form th:action="@{/admin/users/save}" th:object="${user}" method="post">
+                    <form th:action="@{/admin/festival/users/save}" th:object="${user}" method="post">
                         <input type="hidden" th:field="*{id}"/>
 
                         <div class="row mb-3">

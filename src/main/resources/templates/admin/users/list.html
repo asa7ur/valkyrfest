@@ -12,7 +12,7 @@
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2" th:text="#{msg.admin.users.title}">Usuarios</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
-                    <a th:href="@{/admin/users/new}" class="btn btn-sm btn-outline-primary">
+                    <a th:href="@{/admin/festival/users/new}" class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-person-plus me-1"></i>
                         <span th:text="#{msg.admin.users.new}">Nuevo Usuario</span>
                     </a>
@@ -49,11 +49,11 @@
                         </td>
                         <td class="text-center">
                             <div class="btn-group" role="group">
-                                <a th:href="@{/admin/users/edit/{id}(id=${user.id})}"
+                                <a th:href="@{/admin/festival/users/edit/{id}(id=${user.id})}"
                                    class="btn btn-sm btn-warning" th:title="#{msg.admin.edit}">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <a th:href="@{/admin/users/delete/{id}(id=${user.id})}"
+                                <a th:href="@{/admin/festival/users/delete/{id}(id=${user.id})}"
                                    class="btn btn-sm btn-danger"
                                    th:title="#{msg.admin.delete}"
                                    th:onclick="|return confirm('#{msg.admin.confirm_delete_user}')|">
