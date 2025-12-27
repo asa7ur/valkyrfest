@@ -26,10 +26,19 @@ public class ArtistAdminController {
      */
     @GetMapping
     public String listArtists(Model model) {
-        List<Artist> artists = artistService.getAllArtists();
-        model.addAttribute("artists", artists);
-        model.addAttribute("activePage", artists);
+        model.addAttribute("artists", artistService.getAllArtists());
+        model.addAttribute("activePage", "artists");
         return "admin/artists/list";
+    }
+
+    /**
+     * Shows the form to create a new artist
+     */
+    @GetMapping("/new")
+    public String showCreateForm(Model model) {
+        model.addAttribute("artist", new Artist());
+        model.addAttribute("activePage", "artists");
+        return "admin/artists/form";
     }
 
     /**
@@ -72,7 +81,7 @@ public class ArtistAdminController {
     public String deleteArtist(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         artistService.deleteArtist(id);
 
-        redirectAttributes.addFlashAttribute(messageSource.getMessage("msg.admin.artist.delete.success", null, LocaleContextHolder.getLocale()));
+        redirectAttributes.addFlashAttribute("successMessage", messageSource.getMessage("msg.admin.artist.delete.success", null, LocaleContextHolder.getLocale()));
 
         return "redirect:/admin/festival/artists";
     }

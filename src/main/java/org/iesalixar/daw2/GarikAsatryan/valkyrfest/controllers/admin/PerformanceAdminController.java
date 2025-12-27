@@ -30,9 +30,8 @@ public class PerformanceAdminController {
      */
     @GetMapping
     public String listPerformances(Model model) {
-        List<Performance> performances = performanceService.getAllPerformances();
-        model.addAttribute("performances", performances);
-        model.addAttribute("activePage", performances);
+        model.addAttribute("performances", performanceService.getAllPerformances());
+        model.addAttribute("activePage", "performances");
         return "admin/performances/list";
     }
 
@@ -92,7 +91,7 @@ public class PerformanceAdminController {
     public String deletePerformance(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         performanceService.deletePerformance(id);
 
-        redirectAttributes.addFlashAttribute(messageSource.getMessage("msg.admin.performance.delete.success", null, LocaleContextHolder.getLocale()));
+        redirectAttributes.addFlashAttribute("successMessage", messageSource.getMessage("msg.admin.performance.delete.success", null, LocaleContextHolder.getLocale()));
 
         return "redirect:/admin/festival/performances";
     }

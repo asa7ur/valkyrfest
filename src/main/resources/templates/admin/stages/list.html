@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{admin/layout :: head(title=#{msg.admin.stages.title})}"></head>
+<head th:replace="~{admin/layout :: head(title=#{msg.admin.stages.list.title})}"></head>
 <body>
 <div th:replace="~{admin/layout :: navbar}"></div>
 
@@ -13,14 +13,14 @@
                 <h1 class="h2" th:text="#{msg.admin.stages.header}">Gestión de Escenarios</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <a th:href="@{/admin/festival/stages/new}" class="btn btn-sm btn-outline-primary">
-                        <i class="bi bi-plus-circle me-1"></i> <span
-                            th:text="#{msg.admin.stages.new}">Nuevo Escenario</span>
+                        <i class="bi bi-plus-circle me-1"></i>
+                        <span th:text="#{msg.admin.stages.new}">Nuevo Escenario</span>
                     </a>
                 </div>
             </div>
 
             <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
-                <span th:text="${successMessage}">Mensaje de éxito</span>
+                <span th:text="${successMessage}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
@@ -48,14 +48,14 @@
                                 <a th:href="@{/admin/festival/stages/delete/{id}(id=${stage.id})}"
                                    class="btn btn-sm btn-danger"
                                    th:title="#{msg.admin.delete}"
-                                   onclick="return confirm('¿Estás seguro de eliminar este escenario?');">
+                                   th:onclick="|return confirm('#{msg.admin.confirm_delete_stage}')|">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </div>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(stages)}">
-                        <td colspan="4" class="text-center py-4 text-muted">
+                        <td colspan="4" class="text-center py-4 text-muted" th:text="#{msg.admin.stages.empty}">
                             No hay escenarios registrados.
                         </td>
                     </tr>

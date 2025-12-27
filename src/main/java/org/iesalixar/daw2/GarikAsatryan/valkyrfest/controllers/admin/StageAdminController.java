@@ -26,10 +26,19 @@ public class StageAdminController {
      */
     @GetMapping
     public String listStages(Model model) {
-        List<Stage> stages = stageService.getAllStages();
-        model.addAttribute("stages", stages);
-        model.addAttribute("activePage", stages);
+        model.addAttribute("stages", stageService.getAllStages());
+        model.addAttribute("activePage", "stages");
         return "admin/stages/list";
+    }
+
+    /**
+     * Shows the form to add a new stage
+     */
+    @GetMapping("/new")
+    public String showCreateForm(Model model) {
+        model.addAttribute("stage", new Stage());
+        model.addAttribute("activePage", "stages");
+        return "admin/stages/form";
     }
 
     /**
@@ -72,7 +81,7 @@ public class StageAdminController {
     public String deleteStage(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         stageService.deleteStage(id);
 
-        redirectAttributes.addFlashAttribute(messageSource.getMessage("msg.admin.stage.delete.success", null, LocaleContextHolder.getLocale()));
+        redirectAttributes.addFlashAttribute("successMessage", messageSource.getMessage("msg.admin.stage.delete.success", null, LocaleContextHolder.getLocale()));
 
         return "redirect:/admin/festival/stages";
     }
