@@ -82,6 +82,12 @@
                         <span th:text="#{msg.admin.layout.festival_management}">Gestión Festival</span>
                     </h6>
                     <li class="nav-item">
+                        <a class="nav-link" th:classappend="${activePage == 'users' ? 'active' : ''}"
+                           th:href="@{/admin/festival/users}">
+                            <i class="bi bi-people me-2"></i></i> <span th:text="#{msg.admin.users.title}">Usuarios</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" th:classappend="${activePage == 'artists' ? 'active' : ''}"
                            th:href="@{/admin/festival/artists}">
                             <i class="bi bi-music-note-beamed me-2"></i> <span th:text="#{msg.admin.artists.title}">Artistas</span>

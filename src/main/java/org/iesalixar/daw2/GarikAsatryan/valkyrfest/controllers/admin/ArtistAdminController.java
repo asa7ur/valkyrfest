@@ -12,8 +12,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-
 @Controller
 @RequestMapping("/admin/festival/artists")
 @RequiredArgsConstructor
@@ -81,7 +79,8 @@ public class ArtistAdminController {
     public String deleteArtist(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         artistService.deleteArtist(id);
 
-        redirectAttributes.addFlashAttribute("successMessage", messageSource.getMessage("msg.admin.artist.delete.success", null, LocaleContextHolder.getLocale()));
+        redirectAttributes.addFlashAttribute("successMessage",
+                messageSource.getMessage("msg.admin.artist.delete.success", null, LocaleContextHolder.getLocale()));
 
         return "redirect:/admin/festival/artists";
     }
