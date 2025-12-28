@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.Performance;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.PerformanceRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,5 +32,12 @@ public class PerformanceService {
     @Transactional
     public void deletePerformance(Long id) {
         performanceRepository.deleteById(id);
+    }
+
+    public Page<Performance> getAllPerformances(String searchTerm, Pageable pageable) {
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            return performanceRepository.searchPerformances(searchTerm, pageable);
+        }
+        return performanceRepository.findAll(pageable);
     }
 }

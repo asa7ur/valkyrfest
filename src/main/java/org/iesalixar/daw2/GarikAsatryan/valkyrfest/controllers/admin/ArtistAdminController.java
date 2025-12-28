@@ -4,8 +4,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.Artist;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.ArtistService;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.utils.PaginationUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,9 +27,14 @@ public class ArtistAdminController {
      * Lists all artists in the database
      */
     @GetMapping
-    public String listArtists(Model model) {
+    public String listArtists(
+            String searchTerm,
+            @PageableDefault(size = 10) Pageable pageable,
+            Model model) {
+        Page<Artist> artistPage = artistService.getAllArtists(searchTerm, pageable);
+
         model.addAttribute("artists", artistService.getAllArtists());
-        model.addAttribute("activePage", "artists");
+        PaginationUtils.setupPaginationModel(model, artistPage, pageable, searchTerm, "artists");
         return "admin/artists/list";
     }
 

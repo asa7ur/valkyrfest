@@ -3,6 +3,8 @@ package org.iesalixar.daw2.GarikAsatryan.valkyrfest.services;
 import lombok.RequiredArgsConstructor;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.Ticket;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.TicketRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +26,19 @@ public class TicketService {
     }
 
     @Transactional
-    public Ticket saveTicket(Ticket ticket) {
-        return ticketRepository.save(ticket);
+    public void saveTicket(Ticket ticket) {
+        ticketRepository.save(ticket);
     }
 
     @Transactional
     public void deleteTicket(Long id) {
         ticketRepository.deleteById(id);
+    }
+
+    public Page<Ticket> getAllTickets(String searchTerm, Pageable pageable) {
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            return ticketRepository.searchTickets(searchTerm, pageable);
+        }
+        return ticketRepository.findAll(pageable);
     }
 }

@@ -6,8 +6,12 @@ import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.Performance;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.ArtistService;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.PerformanceService;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.StageService;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.utils.PaginationUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,9 +33,15 @@ public class PerformanceAdminController {
      * Lists all performances in the database
      */
     @GetMapping
-    public String listPerformances(Model model) {
-        model.addAttribute("performances", performanceService.getAllPerformances());
-        model.addAttribute("activePage", "performances");
+    public String listPerformances(
+            String searchTerm,
+            @PageableDefault(size = 10) Pageable pageable,
+            Model model) {
+
+        Page<Performance> performancePage = performanceService.getAllPerformances(searchTerm, pageable);
+
+        model.addAttribute("performances", performancePage.getContent());
+        PaginationUtils.setupPaginationModel(model, performancePage, pageable, searchTerm, "performances");
         return "admin/performances/list";
     }
 

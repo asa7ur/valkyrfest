@@ -8,8 +8,12 @@ import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.TicketStatus;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.CampingService;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.CampingTypeService;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.OrderService;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.utils.PaginationUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,13 +30,24 @@ public class CampingAdminController {
     private final OrderService orderService;
     private final MessageSource messageSource;
 
+    /**
+     * Lists all camping tickets in the database
+     */
     @GetMapping
-    public String listCampings(Model model) {
-        model.addAttribute("campings", campingService.getAllCampings());
-        model.addAttribute("activePage", "campings");
+    public String listCampings(
+            String searchTerm,
+            @PageableDefault(size = 10) Pageable pageable,
+            Model model) {
+        Page<Camping> campingPage = campingService.getAllCampings(searchTerm, pageable);
+
+        model.addAttribute("campings", campingPage.getContent());
+        PaginationUtils.setupPaginationModel(model, campingPage, pageable, searchTerm, "campings");
         return "admin/campings/list";
     }
 
+    /**
+     * Shows the form to create a new camping ticket
+     */
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("camping", new Camping());
@@ -40,6 +55,9 @@ public class CampingAdminController {
         return "admin/campings/form";
     }
 
+    /**
+     * Shows the form to edit an existing camping ticket
+     */
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         campingService.getCampingById(id).ifPresent(c -> model.addAttribute("camping", c));
@@ -47,6 +65,9 @@ public class CampingAdminController {
         return "admin/campings/form";
     }
 
+    /**
+     * Saves or updates a camping ticket
+     */
     @PostMapping("/save")
     public String saveCamping(
             @Valid @ModelAttribute("camping") Camping camping,
@@ -67,6 +88,9 @@ public class CampingAdminController {
         return "redirect:/admin/festival/campings";
     }
 
+    /**
+     * Deletes a camping ticket by its ID
+     */
     @GetMapping("/delete/{id}")
     public String deleteCamping(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         campingService.deleteCamping(id);

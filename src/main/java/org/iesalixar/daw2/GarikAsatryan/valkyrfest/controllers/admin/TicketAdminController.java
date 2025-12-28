@@ -8,8 +8,12 @@ import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.TicketStatus;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.OrderService;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.TicketService;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.TicketTypeService;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.utils.PaginationUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,10 +30,20 @@ public class TicketAdminController {
     private final OrderService orderService;
     private final MessageSource messageSource;
 
+    /**
+     * Lists all tickets in the database
+     */
     @GetMapping
-    public String listTickets(Model model) {
-        model.addAttribute("tickets", ticketService.getAllTickets());
-        model.addAttribute("activePage", "tickets");
+    public String listTickets(
+            String searchTerm,
+            @PageableDefault(size = 10) Pageable pageable,
+            Model model) {
+
+        Page<Ticket> ticketPage = ticketService.getAllTickets(searchTerm, pageable);
+
+        model.addAttribute("users", ticketPage.getContent());
+        PaginationUtils.setupPaginationModel(model, ticketPage, pageable, searchTerm, "tickets");
+
         return "admin/tickets/list";
     }
 

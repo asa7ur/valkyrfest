@@ -10,6 +10,8 @@ import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.CampingTypeRepos
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.OrderRepository;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.TicketTypeRepository;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +44,13 @@ public class OrderService {
     @Transactional
     public void deleteOrder(Long id) {
         orderRepository.deleteById(id);
+    }
+
+    public Page<Order> getAllOrders(String searchTerm, Pageable pageable) {
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            return orderRepository.searchOrders(searchTerm, pageable);
+        }
+        return orderRepository.findAll(pageable);
     }
 
     @Transactional

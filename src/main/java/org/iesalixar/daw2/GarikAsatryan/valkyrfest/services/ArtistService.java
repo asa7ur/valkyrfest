@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.Artist;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.ArtistRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,5 +32,12 @@ public class ArtistService {
     @Transactional
     public void deleteArtist(Long id) {
         artistRepository.deleteById(id);
+    }
+
+    public Page<Artist> getAllArtists(String searchTerm, Pageable pageable) {
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            return artistRepository.searchArtists(searchTerm, pageable);
+        }
+        return artistRepository.findAll(pageable);
     }
 }

@@ -3,6 +3,8 @@ package org.iesalixar.daw2.GarikAsatryan.valkyrfest.services;
 import lombok.RequiredArgsConstructor;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.Camping;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.CampingRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +26,19 @@ public class CampingService {
     }
 
     @Transactional
-    public Camping saveCamping(Camping camping) {
-        return campingRepository.save(camping);
+    public void saveCamping(Camping camping) {
+        campingRepository.save(camping);
     }
 
     @Transactional
     public void deleteCamping(Long id) {
         campingRepository.deleteById(id);
+    }
+
+    public Page<Camping> getAllCampings(String searchTerm, Pageable pageable) {
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            return campingRepository.searchCampings(searchTerm, pageable);
+        }
+        return campingRepository.findAll(pageable);
     }
 }
