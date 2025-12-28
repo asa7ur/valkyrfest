@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.User;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,12 +25,19 @@ public class UserService {
     }
 
     @Transactional
-    public User saveUser(User user) {
-        return userRepository.save(user);
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 
     @Transactional
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public Page<User> getAllUsers(String searchTerm, Pageable pageable) {
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            return userRepository.searchUsers(searchTerm, pageable);
+        }
+        return userRepository.findAll(pageable);
     }
 }

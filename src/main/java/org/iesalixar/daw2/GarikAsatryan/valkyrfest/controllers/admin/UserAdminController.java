@@ -5,8 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.User;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.RoleService;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.UserService;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.utils.PaginationUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,9 +29,15 @@ public class UserAdminController {
      * Lists all users in the database
      */
     @GetMapping
-    public String listUsers(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
-        model.addAttribute("activePage", "users");
+    public String listUsers(
+            String searchTerm,
+            @PageableDefault(size = 10) Pageable pageable,
+            Model model) {
+
+        Page<User> userPage = userService.getAllUsers(searchTerm, pageable);
+
+        model.addAttribute("users", userPage.getContent());
+        PaginationUtils.setupPaginationModel(model, userPage, pageable, searchTerm, "users");
         return "admin/users/list";
     }
 
