@@ -13,7 +13,7 @@
         <div class="col-lg-11">
             <h1 class="display-5 fw-bold mb-4 text-center" th:text="#{msg.order.title}">Finalizar Compra</h1>
 
-            <form th:action="@{/templates/order}" th:object="${orderRequest}" method="post">
+            <form th:action="@{/order}" th:object="${orderRequest}" method="post">
 
                 <div class="card bg-secondary text-white mb-4 shadow">
                     <div class="card-header d-flex justify-content-between align-items-center">
