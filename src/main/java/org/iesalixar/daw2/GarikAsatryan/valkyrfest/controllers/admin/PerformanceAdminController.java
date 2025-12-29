@@ -35,7 +35,7 @@ public class PerformanceAdminController {
     @GetMapping
     public String listPerformances(
             String searchTerm,
-            @PageableDefault(size = 10) Pageable pageable,
+            @PageableDefault Pageable pageable,
             Model model) {
 
         Page<Performance> performancePage = performanceService.getAllPerformances(searchTerm, pageable);

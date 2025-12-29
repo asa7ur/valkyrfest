@@ -29,7 +29,7 @@ public class ArtistAdminController {
     @GetMapping
     public String listArtists(
             String searchTerm,
-            @PageableDefault(size = 10) Pageable pageable,
+            @PageableDefault Pageable pageable,
             Model model) {
 
         Page<Artist> artistPage = artistService.getAllArtists(searchTerm, pageable);

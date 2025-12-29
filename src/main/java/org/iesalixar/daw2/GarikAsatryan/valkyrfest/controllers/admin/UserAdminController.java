@@ -31,7 +31,7 @@ public class UserAdminController {
     @GetMapping
     public String listUsers(
             String searchTerm,
-            @PageableDefault(size = 10) Pageable pageable,
+            @PageableDefault Pageable pageable,
             Model model) {
 
         Page<User> userPage = userService.getAllUsers(searchTerm, pageable);

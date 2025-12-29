@@ -4,14 +4,24 @@
 <div th:fragment="header-tools(baseUrl, newUrl, newLabel)" class="flex-grow-1">
     <form th:action="@{${baseUrl}}" method="get"
           class="d-flex flex-wrap flex-md-nowrap justify-content-end align-items-center gap-2">
+
         <input type="hidden" name="sort" th:value="|${sortField ?: 'id'},${sortDir ?: 'asc'}|">
 
-        <div class="input-group input-group-sm" style="width: 250px;">
-            <input type="text" name="searchTerm" class="form-control"
-                   th:value="${searchTerm}" placeholder="Buscar...">
-            <button class="btn btn-outline-secondary" type="submit">
+        <div class="input-group input-group-sm" style="width: 280px;"><input type="text" name="searchTerm"
+                                                                             class="form-control"
+                                                                             th:value="${searchTerm}"
+                                                                             th:placeholder="#{msg.admin.search}">
+
+            <button class="btn btn-outline-secondary" type="submit" th:title="#{msg.admin.search}">
                 <i class="bi bi-search"></i>
             </button>
+
+            <a th:if="${searchTerm != null && !searchTerm.isEmpty() || sortField != 'id'}"
+               th:href="@{${baseUrl}}"
+               class="btn btn-outline-danger"
+               th:title="#{msg.admin.clear_filters}">
+                <i class="bi bi-x-circle"></i>
+            </a>
         </div>
 
         <select name="size" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">

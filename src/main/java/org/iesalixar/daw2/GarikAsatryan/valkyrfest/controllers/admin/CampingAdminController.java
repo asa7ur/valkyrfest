@@ -36,7 +36,7 @@ public class CampingAdminController {
     @GetMapping
     public String listCampings(
             String searchTerm,
-            @PageableDefault(size = 10) Pageable pageable,
+            @PageableDefault Pageable pageable,
             Model model) {
         Page<Camping> campingPage = campingService.getAllCampings(searchTerm, pageable);
 

@@ -30,7 +30,7 @@ public class SponsorAdminController {
     @GetMapping
     public String listSponsors(
             String searchTerm,
-            @PageableDefault(size = 10) Pageable pageable,
+            @PageableDefault Pageable pageable,
             Model model) {
 
         Page<Sponsor> sponsorPage = sponsorService.getAllSponsors(searchTerm, pageable);

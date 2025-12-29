@@ -33,7 +33,7 @@ public class OrderAdminController {
     @GetMapping
     public String listOrders(
             String searchTerm,
-            @PageableDefault(size = 10) Pageable pageable,
+            @PageableDefault Pageable pageable,
             Model model) {
 
         Page<Order> orderPage = orderService.getAllOrders(searchTerm, pageable);
