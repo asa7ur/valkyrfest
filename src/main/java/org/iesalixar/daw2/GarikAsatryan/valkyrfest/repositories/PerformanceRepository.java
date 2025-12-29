@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface PerformanceRepository extends JpaRepository<Performance, Long> {
     @Query("SELECT p FROM Performance p WHERE " +
-            "LOWER(p.artist) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(p.stage) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+            "LOWER(p.artist.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+            "LOWER(p.stage.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
     Page<Performance> searchPerformances(@Param("searchTerm") String searchTerm, Pageable pageable);
 }
