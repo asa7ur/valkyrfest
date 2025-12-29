@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{admin/layout :: head(title=(${stage.id == null} ? #{msg.admin.stages.form.header.new} : #{msg.admin.stages.form.header.edit}))}"></head>
+<head th:replace="~{admin/fragments/layout :: head(title=(${stage.id == null} ? #{msg.admin.stages.form.header.new} : #{msg.admin.stages.form.header.edit}))}"></head>
 <body>
-<div th:replace="~{admin/layout :: navbar}"></div>
+<div th:replace="~{admin/fragments/layout :: navbar}"></div>
 
 <div class="container-fluid">
     <div class="row">
-        <div th:replace="~{admin/layout :: sidebar}"></div>
+        <div th:replace="~{admin/fragments/layout :: sidebar}"></div>
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -67,6 +67,6 @@
     </div>
 </div>
 
-<div th:replace="~{admin/layout :: scripts}"></div>
+<div th:replace="~{admin/fragments/layout :: scripts}"></div>
 </body>
 </html>

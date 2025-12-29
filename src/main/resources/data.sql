@@ -3,12 +3,12 @@ VALUES ('garik@email.com', '$2a$12$lug0IXfwgn8BYvVetProeODV8c4ZA880jLAWu.DkBZ7rt
         '1996-12-30', '666666666'),
        ('extremaydura@email.com', '$2a$12$qWWi4r4PH4ZL52m38Ep0quh7LRppv11eJ50PTSSOCYMBS6oYbCaaO', true, 'Paula',
         'Martín',
-        '1995-08-24', '+1 213 555 9999'),
+        '1995-08-24', '777777777'),
        ('kalerido@email.com', '$2a$12$qWWi4r4PH4ZL52m38Ep0quh7LRppv11eJ50PTSSOCYMBS6oYbCaaO', true, 'Carlos', 'Calero',
-        '1997-09-29', '+49 30 123 456'),
+        '1997-09-29', '612345678'),
        ('nacho.nachet@email.com', '$2a$12$gvyvvwNmM7nCPQqm5FMkCeFYqcHHp2O6niVPlLccVXkUT4l1v/Mui', true, 'Nacho',
         'Muñoz',
-        '1996-01-27', '+81 90 1234 5678'),
+        '1996-01-27', '798765432'),
        ('bjorn.ironside@email.se', '$2a$12$gvyvvwNmM7nCPQqm5FMkCeFYqcHHp2O6niVPlLccVXkUT4l1v/Mui', true, 'Bjorn',
         'Ironside', '1990-01-01', '+46 8 555 444'),
        ('elena.rodriguez@email.es', '$2a$12$gvyvvwNmM7nCPQqm5FMkCeFYqcHHp2O6niVPlLccVXkUT4l1v/Mui', true, 'Elena',
@@ -57,14 +57,6 @@ VALUES (1, 1),
        (15, 3),
        (16, 3);
 
-INSERT IGNORE INTO orders (total_price, status, user_id)
-VALUES (440.00, 'PAID', 4),   -- Yuki: Pack de amigos (Varios tickets/camping)
-       (340.00, 'PAID', 5),   -- Bjorn: Pareja VIP + Glamping
-       (95.00, 'PAID', 6),    -- Elena: Abono general
-       (45.00, 'PENDING', 7), -- Pierre: Entrada de día
-       (95.00, 'PAID', 8),    -- Maria: Abono general
-       (30.00, 'PAID', 9);
-
 INSERT IGNORE INTO ticket_types (name, price, stock_total, stock_available)
 VALUES ('Senda del Guerrero (Abono General)', 95.00, 5000, 5000),
        ('Banquete en el Valhalla (Experiencia VIP)', 250.00, 200, 200),
@@ -73,24 +65,11 @@ VALUES ('Senda del Guerrero (Abono General)', 95.00, 5000, 5000),
        ('Viernes - Entrada de Día', 55.00, 1000, 1000),
        ('Sábado - Entrada de Día', 60.00, 1000, 1000);
 
-INSERT IGNORE INTO tickets (first_name, last_name, document_type, document_number, birth_date, qr_code, status,
-                            ticket_type_id, order_id)
-VALUES ('Yuki', 'Tanaka', 'PASSPORT', 'TK123456', '1998-03-15', 'QR-YUKI-01', 'ACTIVE', 1, 1),
-       ('Kenji', 'Sato', 'PASSPORT', 'TK987654', '1997-05-10', 'QR-KENJI-02', 'ACTIVE', 1, 1),
-       ('Bjorn', 'Ironside', 'NIE', 'X1234567Z', '1990-01-01', 'QR-BJORN-VIP', 'ACTIVE', 2, 2),
-       ('Elena', 'Rodríguez', 'DNI', '12345678A', '1995-07-22', 'QR-ELENA-AB', 'ACTIVE', 1, 3),
-       ('Pierre', 'Dubois', 'PASSPORT', 'FR998877', '1992-12-05', 'QR-PIERRE-DIA', 'ACTIVE', 3, 4);;
-
 INSERT IGNORE INTO camping_types (name, price, stock_total, stock_available)
 VALUES ('Sombra de Yggdrasil (Camping Sombra)', 30.00, 500, 500),
        ('Morada de Freya (Glamping de Lujo)', 150.00, 50, 50),
        ('Drakkar sobre Ruedas (Zona Caravanas)', 80.00, 100, 100);
 
-INSERT INTO campings (first_name, last_name, document_type, document_number, birth_date, qr_code, status,
-                      camping_type_id, order_id)
-VALUES ('Yuki', 'Tanaka', 'PASSPORT', 'TK123456', '1998-03-15', 'QR-CAMP-YUKI', 'ACTIVE', 1, 1),
-       ('Kenji', 'Sato', 'PASSPORT', 'TK987654', '1997-05-10', 'QR-CAMP-KENJI', 'ACTIVE', 1, 1),
-       ('Bjorn', 'Ironside', 'NIE', 'X1234567Z', '1990-01-01', 'QR-BJORN-GLAMP', 'ACTIVE', 2, 2);
 
 INSERT INTO sponsors (name, phone, email, contribution, image)
 VALUES ('Cruzcampo', '+34 954 979 000', 'sponsorship@heinekenespana.es', 60000.00, 'cruzcampo_logo.png'),
