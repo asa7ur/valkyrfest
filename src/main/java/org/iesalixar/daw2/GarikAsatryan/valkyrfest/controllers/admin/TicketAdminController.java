@@ -9,6 +9,8 @@ import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.OrderService;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.TicketService;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.TicketTypeService;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.utils.PaginationUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/admin/festival/tickets")
 @RequiredArgsConstructor
 public class TicketAdminController {
+    private static final Logger logger = LoggerFactory.getLogger(TicketAdminController.class);
 
     private final TicketService ticketService;
     private final TicketTypeService ticketTypeService;
@@ -36,12 +39,14 @@ public class TicketAdminController {
     @GetMapping
     public String listTickets(
             String searchTerm,
-            @PageableDefault(size = 10) Pageable pageable,
+            @PageableDefault Pageable pageable,
             Model model) {
+        logger.info("Listing tickets...");
 
         Page<Ticket> ticketPage = ticketService.getAllTickets(searchTerm, pageable);
 
-        model.addAttribute("users", ticketPage.getContent());
+        logger.info("Found {} tickets.", ticketPage.getTotalElements());
+        model.addAttribute("tickets", ticketPage.getContent());
         PaginationUtils.setupPaginationModel(model, ticketPage, pageable, searchTerm, "tickets");
 
         return "admin/tickets/list";

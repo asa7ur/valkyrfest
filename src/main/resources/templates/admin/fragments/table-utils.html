@@ -55,13 +55,38 @@
             </a>
         </li>
 
-        <li class="page-item"
-            th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-            th:if="${i >= currentPage - 2 && i <= currentPage + 2}"
-            th:classappend="${i == currentPage} ? 'active shadow-sm'">
+        <li class="page-item" th:classappend="${currentPage == 0} ? 'active shadow-sm'">
             <a class="page-link"
-               th:href="@{${baseUrl}(page=${i}, size=${pageSize}, searchTerm=${searchTerm}, sort=|${sortField},${sortDir}|)}"
-               th:text="${i + 1}">1</a>
+               th:href="@{${baseUrl}(page=0, size=${pageSize}, searchTerm=${searchTerm}, sort=|${sortField},${sortDir}|)}">1</a>
+        </li>
+
+        <li class="page-item disabled" th:if="${currentPage > 2}">
+            <span class="page-link">...</span>
+        </li>
+
+        <th:block th:if="${totalPages > 2}">
+
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(1, totalPages - 2)}"
+                th:if="${i >= currentPage - 1 && i <= currentPage + 1}"
+                th:classappend="${i == currentPage} ? 'active shadow-sm'">
+
+                <a class="page-link"
+                   th:href="@{${baseUrl}(page=${i}, size=${pageSize}, searchTerm=${searchTerm}, sort=|${sortField},${sortDir}|)}"
+                   th:text="${i + 1}">2</a>
+            </li>
+
+        </th:block>
+
+        <li class="page-item disabled" th:if="${currentPage < totalPages - 3}">
+            <span class="page-link">...</span>
+        </li>
+
+        <li class="page-item" th:if="${totalPages > 1}"
+            th:classappend="${currentPage == totalPages - 1} ? 'active shadow-sm'">
+            <a class="page-link"
+               th:href="@{${baseUrl}(page=${totalPages - 1}, size=${pageSize}, searchTerm=${searchTerm}, sort=|${sortField},${sortDir}|)}"
+               th:text="${totalPages}">10</a>
         </li>
 
         <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
