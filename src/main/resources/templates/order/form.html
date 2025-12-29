@@ -13,7 +13,7 @@
         <div class="col-lg-11">
             <h1 class="display-5 fw-bold mb-4 text-center" th:text="#{msg.order.title}">Finalizar Compra</h1>
 
-            <form th:action="@{/purchase}" th:object="${purchaseRequest}" method="post">
+            <form th:action="@{/templates/order}" th:object="${orderRequest}" method="post">
 
                 <div class="card bg-secondary text-white mb-4 shadow">
                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -23,7 +23,13 @@
                         </button>
                     </div>
                     <div class="card-body" id="ticket-container">
-                        <p class="text-center text-light" id="no-ticket-msg">No has añadido ninguna entrada todavía.</p>
+                        <th:block th:each="ticket, stat : ${orderRequest.tickets}">
+                            <div th:replace="~{order/fragments :: ticketRow(${stat.index}, ${ticket})}"></div>
+                        </th:block>
+                        <p class="text-center text-light" id="no-ticket-msg"
+                           th:style="${#lists.isEmpty(orderRequest.tickets)} ? 'display:block' : 'display:none'">
+                            No has añadido ninguna entrada todavía.
+                        </p>
                     </div>
                 </div>
 
@@ -35,13 +41,19 @@
                         </button>
                     </div>
                     <div class="card-body" id="camping-container">
-                        <p class="text-center text-light" id="no-camping-msg">No has añadido reservas de camping.</p>
+                        <th:block th:each="camping, stat : ${orderRequest.campings}">
+                            <div th:replace="~{order/fragments :: campingRow(${stat.index}, ${camping})}"></div>
+                        </th:block>
+                        <p class="text-center text-light" id="no-camping-msg"
+                           th:style="${#lists.isEmpty(orderRequest.campings)} ? 'display:block' : 'display:none'">
+                            No has añadido reservas de camping.
+                        </p>
                     </div>
                 </div>
 
                 <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-success btn-lg">
-                        <i class="bi bi-cart-check me-2"></i>Confirmar y Pagar
+                    <button type="submit" class="btn btn-success btn-lg"><i class="bi bi-cart-check me-2"></i>Ir al
+                        Checkout
                     </button>
                     <a th:href="@{/}" class="btn btn-outline-light">Cancelar</a>
                 </div>
@@ -51,40 +63,53 @@
 </div>
 
 <div id="ticket-template" class="d-none">
-    <div th:replace="~{purchase/fragments :: ticketRow('INDEX')}"></div>
+    <div th:replace="~{order/fragments :: ticketRow('INDEX', null)}"></div>
 </div>
 <div id="camping-template" class="d-none">
-    <div th:replace="~{purchase/fragments :: campingRow('INDEX')}"></div>
+    <div th:replace="~{order/fragments :: campingRow('INDEX', null)}"></div>
 </div>
 
-<script>
+<script th:inline="javascript">
+    // Los comentarios /*[[...]]*/ evitan que el IDE se queje de errores de sintaxis
     let counters = {
-        ticket: 0,
-        camping: 0
+        ticket: /*[[${#lists.size(orderRequest.tickets)}]]*/ 0,
+        camping: /*[[${#lists.size(orderRequest.campings)}]]*/ 0
     };
 
     function addItem(type) {
-        // 1. Quitar el mensaje de "No hay elementos" si existe
+        // Ocultar mensaje de vacío
         const msg = document.getElementById(`no-${type}-msg`);
         if (msg) msg.style.display = 'none';
 
-        // 2. Obtener el contenedor y la plantilla
         const container = document.getElementById(`${type}-container`);
         const templateHtml = document.getElementById(`${type}-template`).innerHTML;
 
-        // 3. Reemplazar la palabra "INDEX" por el número actual (0, 1, 2...)
-        const currentIndex = counters[type];
-        const newRowHtml = templateHtml.replace(/INDEX/g, currentIndex);
+        // Reemplazar el marcador de posición por el índice actual
+        const newRowHtml = templateHtml.replace(/INDEX/g, counters[type]);
 
-        // 4. Insertar en el DOM
         const wrapper = document.createElement('div');
         wrapper.innerHTML = newRowHtml;
         container.appendChild(wrapper.firstElementChild);
 
-        // 5. Incrementar el contador para la siguiente fila
         counters[type]++;
     }
-</script>
 
+    // NUEVO MÉTODO: Borra la fila y muestra el mensaje si es la última
+    function removeRow(btn, type) {
+        const container = document.getElementById(`${type}-container`);
+
+        // Eliminamos la fila visualmente
+        btn.closest('.row').remove();
+
+        // Buscamos cuántas filas de ese tipo quedan
+        const remainingRows = container.getElementsByClassName(`${type}-row`).length;
+
+        // Si no quedan filas, volvemos a mostrar el mensaje de "No has añadido..."
+        if (remainingRows === 0) {
+            const msg = document.getElementById(`no-${type}-msg`);
+            if (msg) msg.style.display = 'block';
+        }
+    }
+</script>
 </body>
 </html>

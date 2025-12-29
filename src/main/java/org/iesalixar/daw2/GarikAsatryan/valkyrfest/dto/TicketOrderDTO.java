@@ -3,10 +3,11 @@ package org.iesalixar.daw2.GarikAsatryan.valkyrfest.dto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.DocumentType;
+
 import java.time.LocalDate;
 
 @Data
-public class CampingPurchaseDTO {
+public class TicketOrderDTO {
     @NotBlank(message = "{msg.validation.required}")
     private String firstName;
 
@@ -23,5 +24,5 @@ public class CampingPurchaseDTO {
     private LocalDate birthDate;
 
     @NotNull(message = "{msg.validation.required}")
-    private Long campingTypeId; // El ID del tipo de camping
+    private Long ticketTypeId;
 }
