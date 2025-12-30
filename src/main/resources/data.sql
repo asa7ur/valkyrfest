@@ -1,11 +1,13 @@
 INSERT IGNORE INTO users (email, password, enabled, first_name, last_name, birth_date, phone)
-VALUES ('garik@email.com', '$2a$12$8LssFTKG6GY.pl7Xd.K8DOHFHWwUUm1wOzQ5L4LT9uoIB2XbXYw9a', true, 'Garik', 'Asatryan', '1996-12-30', '666666666'),
-       ('paula@email.com', '$2a$12$jKTxYa0fSqWzb2UrhHxR8uDn5/ArJrh4VQ1zNxJHCU7.LsZmEUE/.', true, 'Paula', 'Martín', '1995-08-24', '777777777');
+VALUES ('garik@email.com', '$2a$12$8LssFTKG6GY.pl7Xd.K8DOHFHWwUUm1wOzQ5L4LT9uoIB2XbXYw9a', true, 'Garik', 'Asatryan',
+        '1996-12-30', '666666666'),
+       ('paula@email.com', '$2a$12$jKTxYa0fSqWzb2UrhHxR8uDn5/ArJrh4VQ1zNxJHCU7.LsZmEUE/.', true, 'Paula', 'Martín',
+        '1995-08-24', '777777777');
 
 INSERT IGNORE INTO roles (name)
-VALUES ('Admin'),
-       ('Manager'),
-       ('User');
+VALUES ('ADMIN'),
+       ('MANAGER'),
+       ('USER');
 
 INSERT IGNORE INTO user_role (user_id, role_id)
 VALUES (1, 1),
@@ -92,7 +94,8 @@ VALUES ('Gojira', '+33 1 42 67 00 00', 'contact@gojira-music.com', 'Progressive 
        ('Alcest', '+33 4 91 12 34 56', 'alcest.band@gmail.com', 'Blackgaze', 'France'),
        ('Acid Bath', '+1 504 555 0122', 'acidbath@rotten.com', 'Sludge Metal', 'USA'),
        ('Meshuggah', '+46 90 123 45 67', 'meshuggah@management.se', 'Extreme Progressive Metal', 'Sweden'),
-       ('Derby Motoretas Burrito Kachimba', '+34 954 12 34 56', 'kinkidelia@derbymotoretas.com', 'Psychedelic Rock', 'Spain'),
+       ('Derby Motoretas Burrito Kachimba', '+34 954 12 34 56', 'kinkidelia@derbymotoretas.com', 'Psychedelic Rock',
+        'Spain'),
        ('Limp Bizkit', '+1 904 555 0100', 'bizkit.mgmt@gmail.com', 'Nu Metal', 'USA'),
        ('Slaughter to Prevail', '+7 495 123 45 67', 'alex.terrible@stp.com', 'Deathcore', 'Russia'),
        ('Leprous', '+47 35 55 66 77', 'management@leprous.net', 'Progressive Rock', 'Norway'),
