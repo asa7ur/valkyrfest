@@ -1,6 +1,5 @@
 package org.iesalixar.daw2.GarikAsatryan.valkyrfest.controllers;
 
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.dto.UserRegistrationDTO;

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -89,9 +90,7 @@ public class OrderService {
     }
 
     @Transactional
-    public Order executeOrder(OrderRequestDTO request, String userEmail) {
-
-        // Validamos que no intente comprar nada (ambas listas vacías)
+    public Order executeOrder(OrderRequestDTO request, User user) {
         boolean hasTickets = request.getTickets() != null && !request.getTickets().isEmpty();
         boolean hasCampings = request.getCampings() != null && !request.getCampings().isEmpty();
 
@@ -99,26 +98,19 @@ public class OrderService {
             throw new AppException("msg.validation.atLeastOne");
         }
 
-        // Buscamos al usuario que realiza la compra
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new AppException("msg.error.userNotFound"));
-
-        // Creamos la cabecera del pedido
         Order order = new Order();
         order.setUser(user);
-        order.setStatus(OrderStatus.PAID); // Asumimos pago inmediate por ahora
+        order.setOrderDate(LocalDateTime.now());
+        order.setStatus(OrderStatus.PENDING);
         BigDecimal totalPrice = BigDecimal.ZERO;
 
-        // Procesamos los tickets
         if (hasTickets) {
             for (TicketOrderDTO tDto : request.getTickets()) {
                 TicketType type = ticketTypeRepository.findById(tDto.getTicketTypeId())
                         .orElseThrow(() -> new AppException("msg.error.ticketTypeNotFound"));
 
-                // Validar stock
                 if (type.getStockAvailable() <= 0) throw new AppException("msg.error.noStock", type.getName());
 
-                // Crear entidad Ticket
                 Ticket ticket = new Ticket();
                 ticket.setFirstName(tDto.getFirstName());
                 ticket.setLastName(tDto.getLastName());
@@ -132,13 +124,11 @@ public class OrderService {
                 order.getTickets().add(ticket);
                 totalPrice = totalPrice.add(type.getPrice());
 
-                // Reducir stock
                 type.setStockAvailable(type.getStockAvailable() - 1);
                 ticketTypeRepository.save(type);
             }
         }
 
-        // Procesamos el Camping
         if (hasCampings) {
             for (CampingOrderDTO cDto : request.getCampings()) {
                 CampingType type = campingTypeRepository.findById(cDto.getCampingTypeId())
@@ -166,26 +156,19 @@ public class OrderService {
             }
         }
 
-        // Guardamos el pedido final con el precio total
         order.setTotalPrice(totalPrice);
         return orderRepository.save(order);
     }
+
+    /**
+     * Nuevo método para confirmar el pago.
+     * Al ser @Transactional, asegura que el cambio de estado se guarde inmediatamente.
+     */
+    @Transactional
+    public Order confirmPayment(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + orderId));
+        order.setStatus(OrderStatus.PAID);
+        return orderRepository.save(order);
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
