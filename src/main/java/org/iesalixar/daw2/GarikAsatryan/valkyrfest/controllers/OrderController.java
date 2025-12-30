@@ -8,13 +8,19 @@ import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.Order;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.TicketType;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.CampingTypeService;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.OrderService;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.PdfGeneratorService;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.TicketTypeService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -25,6 +31,7 @@ public class OrderController {
     private final OrderService orderService;
     private final TicketTypeService ticketTypeService;
     private final CampingTypeService campingTypeService;
+    private final PdfGeneratorService pdfGeneratorService;
 
     // 1. Mostrar el formulario inicial
     @GetMapping
@@ -70,6 +77,18 @@ public class OrderController {
         return "order/checkout";
     }
 
+    @GetMapping("/my-orders")
+    public String showMyOrders(Authentication authentication, Model model) {
+        // Obtenemos el email del usuario logueado
+        String email = authentication.getName();
+
+        // Recuperamos su lista de pedidos
+        List<Order> myOrders = orderService.getOrdersByUser(email);
+
+        model.addAttribute("orders", myOrders);
+        return "order/my-orders";
+    }
+
     // 4. Eliminar items desde el checkout
     @GetMapping("/remove/{type}/{index}")
     public String removeItem(@PathVariable String type, @PathVariable int index, HttpSession session) {
@@ -107,5 +126,23 @@ public class OrderController {
 
         model.addAttribute("order", order);
         return "order/success";
+    }
+
+    @GetMapping("/download/{id}")
+    public ResponseEntity<byte[]> downloadPdf(@PathVariable Long id, Authentication authentication) throws Exception {
+        Order order = orderService.getOrderById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+
+        // Seguridad: solo el dueño del pedido puede descargarlo
+        if (!order.getUser().getEmail().equals(authentication.getName())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        byte[] pdfBytes = pdfGeneratorService.generateOrderPdf(order);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Valkyrfest_Pedido_" + id + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
     }
 }
