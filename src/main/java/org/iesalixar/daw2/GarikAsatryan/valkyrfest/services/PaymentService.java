@@ -22,7 +22,7 @@ public class PaymentService {
     private final OrderService orderService;
     private final PdfGeneratorService pdfGeneratorService;
     private final EmailService emailService;
-    private final ObjectMapper objectMapper; // Jackson ya está en tu pom.xml
+    private final ObjectMapper objectMapper;
 
     @Value("${stripe.secret.key}")
     private String secretKey;

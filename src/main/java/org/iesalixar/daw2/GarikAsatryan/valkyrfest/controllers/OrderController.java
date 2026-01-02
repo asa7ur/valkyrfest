@@ -108,7 +108,7 @@ public class OrderController {
     @GetMapping("/success/{id}")
     public String showSuccess(@PathVariable Long id, Model model, Authentication authentication) {
         Order order = orderService.getOrderById(id)
-                .orElseThrow(() -> new AppException("msg.error.orderNotFound")); // Cambio aplicado
+                .orElseThrow(() -> new AppException("msg.error.orderNotFound"));
 
         if (!order.getUser().getEmail().equals(authentication.getName())) {
             return "redirect:/";
@@ -121,7 +121,7 @@ public class OrderController {
     @GetMapping("/download/{id}")
     public ResponseEntity<byte[]> downloadPdf(@PathVariable Long id, Authentication authentication) throws Exception {
         Order order = orderService.getOrderById(id)
-                .orElseThrow(() -> new AppException("msg.error.orderNotFound")); // Cambio aplicado
+                .orElseThrow(() -> new AppException("msg.error.orderNotFound"));
 
         if (!order.getUser().getEmail().equals(authentication.getName())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
