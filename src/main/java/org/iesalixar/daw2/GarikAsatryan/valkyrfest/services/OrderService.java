@@ -11,6 +11,8 @@ import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.CampingTypeRepos
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.OrderRepository;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.TicketTypeRepository;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final TicketTypeRepository ticketTypeRepository;
@@ -91,6 +94,7 @@ public class OrderService {
 
     @Transactional
     public Order executeOrder(OrderRequestDTO request, User user) {
+        logger.info("Iniciando creación de pedido para el usuario: {}", user.getEmail());
         boolean hasTickets = request.getTickets() != null && !request.getTickets().isEmpty();
         boolean hasCampings = request.getCampings() != null && !request.getCampings().isEmpty();
 
@@ -161,11 +165,12 @@ public class OrderService {
     }
 
     /**
-     * Nuevo método para confirmar el pago.
+     * Método para confirmar el pago.
      * Al ser @Transactional, asegura que el cambio de estado se guarde inmediatamente.
      */
     @Transactional
     public Order confirmPayment(Long orderId) {
+        logger.info("Confirmando pago para el pedido #{}", orderId);
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + orderId));
         order.setStatus(OrderStatus.PAID);

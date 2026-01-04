@@ -12,6 +12,8 @@ import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.Order;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PaymentService {
 
+    private static final Logger logger = LoggerFactory.getLogger(PaymentService.class);
     private final OrderService orderService;
     private final PdfGeneratorService pdfGeneratorService;
     private final EmailService emailService;
@@ -69,9 +72,9 @@ public class PaymentService {
 
     @Transactional
     public void processWebhookEvent(String payload, String sigHeader) throws Exception {
-        System.out.println("LOG: Webhook de Stripe recibido.");
+        logger.info("Webhook de Stripe recibido.");
         Event event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
-        System.out.println("LOG: Evento validado: " + event.getType());
+        logger.info("Evento validado: {}", event.getType());
 
         if ("checkout.session.completed".equals(event.getType())) {
             EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
@@ -81,11 +84,11 @@ public class PaymentService {
             if (dataObjectDeserializer.getObject().isPresent()) {
                 Session session = (Session) dataObjectDeserializer.getObject().get();
                 orderIdStr = session.getClientReferenceId();
-                System.out.println("LOG: Sesión deserializada correctamente.");
+                logger.info("Sesión deserializada correctamente.");
             }
-            // Intento 2: Extracción manual con Jackson (Fallback para errores de versión)
+            // Intento 2: Extracción manual con Jackson (Fallback)
             else {
-                System.err.println("ADVERTENCIA: Fallo de deserialización por versión. Usando extracción manual con Jackson.");
+                logger.warn("Fallo de deserialización por versión. Usando extracción manual con Jackson.");
                 String rawJson = dataObjectDeserializer.getRawJson();
                 JsonNode node = objectMapper.readTree(rawJson);
                 if (node.has("client_reference_id") && !node.get("client_reference_id").isNull()) {
@@ -99,24 +102,23 @@ public class PaymentService {
 
                     // 1. Marcar como PAID en la DB (Transaccional)
                     Order order = orderService.confirmPayment(orderId);
-                    System.out.println("LOG: Pedido #" + orderId + " marcado como PAID en DB.");
+                    logger.info("Pedido #{} marcado como PAID en DB.", orderId);
 
                     // 2. Procesos secundarios (PDF y Email)
                     try {
                         byte[] pdfBytes = pdfGeneratorService.generateOrderPdf(order);
                         emailService.sendOrderConfirmationEmail(order, pdfBytes);
-                        System.out.println("LOG: Email enviado a Mailtrap con éxito.");
+                        logger.info("Email enviado a Mailtrap con éxito.");
                     } catch (Exception e) {
-                        System.err.println("ADVERTENCIA: El pago se guardó, pero falló el email: " + e.getMessage());
+                        logger.warn("El pago se guardó, pero falló el envío del email: {}", e.getMessage());
                     }
 
                 } catch (Exception e) {
-                    System.err.println("ERROR CRÍTICO procesando el webhook: " + e.getMessage());
-                    e.printStackTrace();
+                    logger.error("ERROR CRÍTICO procesando el webhook", e);
                     throw e;
                 }
             } else {
-                System.err.println("ERROR: No se encontró clientReferenceId en el evento de Stripe.");
+                logger.error("No se encontró clientReferenceId en el evento de Stripe.");
             }
         }
     }
