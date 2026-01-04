@@ -19,5 +19,5 @@ public class ArtistDetailDTO {
     private String youtubeUrl;
     private String spotifyUrl;
     private String instagramUrl;
-    private List<String> imageUrls;
+    private List<ArtistImageDTO> images;
 }

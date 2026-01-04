@@ -44,47 +44,40 @@ public class ArtistService {
         return artistRepository.findAll(pageable);
     }
 
-    /**
-     * Guarda un artista gestionando su logo (único) y sus imágenes (múltiples y aditivas).
-     */
     @Transactional
     public void saveArtist(Artist artist, MultipartFile logoFile, MultipartFile[] imageFiles) throws IOException {
         Artist artistToSave;
 
         if (artist.getId() != null) {
-            // 1. Recuperamos la versión actual de la base de datos
             artistToSave = artistRepository.findById(artist.getId())
                     .orElseThrow(() -> new RuntimeException("Artist not found"));
 
-            // 2. Actualizamos solo los campos de texto
             artistToSave.setName(artist.getName());
             artistToSave.setPhone(artist.getPhone());
             artistToSave.setEmail(artist.getEmail());
             artistToSave.setGenre(artist.getGenre());
             artistToSave.setCountry(artist.getCountry());
 
-            // Al usar el objeto recuperado 'artistToSave', mantenemos sus listas
-            // de 'images' y 'performances' originales, evitando que Hibernate las borre.
+            // CORRECCIÓN: Añadidos los nuevos campos para que se actualicen
+            artistToSave.setDescription(artist.getDescription());
+            artistToSave.setYoutubeUrl(artist.getYoutubeUrl());
+            artistToSave.setSpotifyUrl(artist.getSpotifyUrl());
+            artistToSave.setInstagramUrl(artist.getInstagramUrl());
+
         } else {
-            // Es un artista nuevo
             artistToSave = artist;
         }
 
-        // 3. Gestión del LOGO
         if (logoFile != null && !logoFile.isEmpty()) {
-            // Si ya tenía un logo, lo borramos del disco
             if (artistToSave.getLogo() != null) {
                 fileService.deleteFile(artistToSave.getLogo(), ARTISTS_FOLDER);
             }
             String logoName = fileService.saveFile(logoFile, ARTISTS_FOLDER);
             artistToSave.setLogo(logoName);
         }
-        // Si no se sube logo nuevo, 'artistToSave' ya mantiene el que tenía de la DB
 
-        // 4. Guardamos el artista (esto preserva las relaciones existentes)
         Artist savedArtist = artistRepository.save(artistToSave);
 
-        // 5. Gestión de nuevas IMÁGENES (Añadir sin borrar las anteriores)
         if (imageFiles != null && imageFiles.length > 0) {
             for (MultipartFile file : imageFiles) {
                 if (!file.isEmpty()) {
@@ -96,64 +89,6 @@ public class ArtistService {
                 }
             }
         }
-    }
-
-    @Transactional
-    public void deleteArtist(Long id) {
-        Optional<Artist> artistOpt = artistRepository.findById(id);
-        if (artistOpt.isPresent()) {
-            Artist artist = artistOpt.get();
-            if (artist.getLogo() != null) {
-                fileService.deleteFile(artist.getLogo(), ARTISTS_FOLDER);
-            }
-            for (ArtistImage img : artist.getImages()) {
-                fileService.deleteFile(img.getImageUrl(), ARTISTS_FOLDER);
-            }
-            artistRepository.delete(artist);
-        }
-    }
-
-    @Transactional
-    public void deleteLogo(Long id) {
-        artistRepository.findById(id).ifPresent(artist -> {
-            if (artist.getLogo() != null) {
-                fileService.deleteFile(artist.getLogo(), ARTISTS_FOLDER);
-                artist.setLogo(null);
-                artistRepository.save(artist);
-            }
-        });
-    }
-
-    @Transactional
-    public void deleteArtistImage(Long imageId) {
-        Optional<ArtistImage> imgOpt = artistImageRepository.findById(imageId);
-        if (imgOpt.isPresent()) {
-            ArtistImage img = imgOpt.get();
-            fileService.deleteFile(img.getImageUrl(), ARTISTS_FOLDER);
-            artistImageRepository.delete(img);
-        }
-    }
-
-    @Transactional
-    public List<ArtistDTO> getAllArtistsDTO() {
-        return artistRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    private ArtistDTO convertToDTO(Artist artist) {
-        List<ArtistImageDTO> imageDTOs = artist.getImages().stream()
-                .map(img -> new ArtistImageDTO(img.getId(), img.getImageUrl()))
-                .collect(Collectors.toList());
-
-        return new ArtistDTO(
-                artist.getId(),
-                artist.getName(),
-                artist.getGenre(),
-                artist.getCountry(),
-                artist.getLogo(),
-                imageDTOs
-        );
     }
 
     public Optional<ArtistDetailDTO> getArtistDetailById(Long id) {
@@ -169,11 +104,58 @@ public class ArtistService {
             dto.setSpotifyUrl(artist.getSpotifyUrl());
             dto.setInstagramUrl(artist.getInstagramUrl());
 
-            // Mapear las imágenes de la galería
-            dto.setImageUrls(artist.getImages().stream()
-                    .map(ArtistImage::getImageUrl)
+            // CORRECCIÓN: Mapear a ArtistImageDTO para que coincida con el frontend
+            dto.setImages(artist.getImages().stream()
+                    .map(img -> new ArtistImageDTO(img.getId(), img.getImageUrl()))
                     .collect(Collectors.toList()));
             return dto;
         });
+    }
+
+    @Transactional
+    public void deleteArtist(Long id) {
+        artistRepository.findById(id).ifPresent(artist -> {
+            if (artist.getLogo() != null) fileService.deleteFile(artist.getLogo(), ARTISTS_FOLDER);
+            artist.getImages().forEach(img -> fileService.deleteFile(img.getImageUrl(), ARTISTS_FOLDER));
+            artistRepository.delete(artist);
+        });
+    }
+
+    @Transactional
+    public void deleteLogo(Long id) {
+        artistRepository.findById(id).ifPresent(artist -> {
+            if (artist.getLogo() != null) {
+                fileService.deleteFile(artist.getLogo(), ARTISTS_FOLDER);
+                artist.setLogo(null);
+                artistRepository.save(artist);
+            }
+        });
+    }
+
+    @Transactional
+    public void deleteArtistImage(Long imageId) {
+        artistImageRepository.findById(imageId).ifPresent(img -> {
+            fileService.deleteFile(img.getImageUrl(), ARTISTS_FOLDER);
+            artistImageRepository.delete(img);
+        });
+    }
+
+    public List<ArtistDTO> getAllArtistsDTO() {
+        return artistRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private ArtistDTO convertToDTO(Artist artist) {
+        return new ArtistDTO(
+                artist.getId(),
+                artist.getName(),
+                artist.getGenre(),
+                artist.getCountry(),
+                artist.getLogo(),
+                artist.getImages().stream()
+                        .map(img -> new ArtistImageDTO(img.getId(), img.getImageUrl()))
+                        .collect(Collectors.toList())
+        );
     }
 }
