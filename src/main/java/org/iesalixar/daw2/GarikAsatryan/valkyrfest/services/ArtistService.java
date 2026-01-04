@@ -3,6 +3,7 @@ package org.iesalixar.daw2.GarikAsatryan.valkyrfest.services;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.dto.ArtistDTO;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.dto.ArtistDetailDTO;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.dto.ArtistImageDTO;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.Artist;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.ArtistImage;
@@ -153,5 +154,26 @@ public class ArtistService {
                 artist.getLogo(),
                 imageDTOs
         );
+    }
+
+    public Optional<ArtistDetailDTO> getArtistDetailById(Long id) {
+        return artistRepository.findById(id).map(artist -> {
+            ArtistDetailDTO dto = new ArtistDetailDTO();
+            dto.setId(artist.getId());
+            dto.setName(artist.getName());
+            dto.setGenre(artist.getGenre());
+            dto.setCountry(artist.getCountry());
+            dto.setLogo(artist.getLogo());
+            dto.setDescription(artist.getDescription());
+            dto.setYoutubeUrl(artist.getYoutubeUrl());
+            dto.setSpotifyUrl(artist.getSpotifyUrl());
+            dto.setInstagramUrl(artist.getInstagramUrl());
+
+            // Mapear las imágenes de la galería
+            dto.setImageUrls(artist.getImages().stream()
+                    .map(ArtistImage::getImageUrl)
+                    .collect(Collectors.toList()));
+            return dto;
+        });
     }
 }

@@ -48,6 +48,18 @@ public class Artist {
     @Column(name = "country", nullable = false, length = 100)
     private String country;
 
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "youtube_url")
+    private String youtubeUrl;
+
+    @Column(name = "spotify_url")
+    private String spotifyUrl;
+
+    @Column(name = "instagram_url")
+    private String instagramUrl;
+
     @Column(name = "logo")
     private String logo;
 

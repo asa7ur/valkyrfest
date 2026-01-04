@@ -109,6 +109,43 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="description" class="form-label fw-bold"
+                                       th:text="#{msg.admin.artists.description}">Descripción / Biografía</label>
+                                <textarea id="description" th:field="*{description}" class="form-control" rows="5"
+                                          th:errorclass="is-invalid"
+                                          placeholder="Escribe la biografía del artista..."></textarea>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}"
+                                     th:errors="*{description}"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="instagramUrl" class="form-label fw-bold">
+                                    <i class="bi bi-instagram text-danger"></i> Instagram URL
+                                </label>
+                                <input type="url" id="instagramUrl" th:field="*{instagramUrl}" class="form-control"
+                                       placeholder="https://instagram.com/..." th:errorclass="is-invalid">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="spotifyUrl" class="form-label fw-bold">
+                                    <i class="bi bi-spotify text-success"></i> Spotify Embed URL
+                                </label>
+                                <input type="url" id="spotifyUrl" th:field="*{spotifyUrl}" class="form-control"
+                                       placeholder="https://open.spotify.com/embed/..." th:errorclass="is-invalid">
+                                <div class="form-text">Copia el enlace de "Insertar" de Spotify.</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="youtubeUrl" class="form-label fw-bold">
+                                    <i class="bi bi-youtube text-danger"></i> YouTube URL
+                                </label>
+                                <input type="url" id="youtubeUrl" th:field="*{youtubeUrl}" class="form-control"
+                                       placeholder="https://youtube.com/..." th:errorclass="is-invalid">
+                            </div>
+                        </div>
+
                         <hr class="my-4">
 
                         <div class="row">

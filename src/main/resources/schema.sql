@@ -144,13 +144,17 @@ CREATE TABLE sponsor_stage
 
 CREATE TABLE artists
 (
-    id      BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name    VARCHAR(100) NOT NULL UNIQUE,
-    phone   VARCHAR(20)  NOT NULL,
-    email   VARCHAR(100) NOT NULL,
-    genre   VARCHAR(100) NOT NULL,
-    country VARCHAR(100) NOT NULL,
-    logo    VARCHAR(255)
+    id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name          VARCHAR(100) NOT NULL UNIQUE,
+    phone         VARCHAR(20)  NOT NULL,
+    email         VARCHAR(100) NOT NULL,
+    genre         VARCHAR(100) NOT NULL,
+    country       VARCHAR(100) NOT NULL,
+    description   TEXT,
+    logo          VARCHAR(255),
+    youtube_url   VARCHAR(255),
+    spotify_url   VARCHAR(255),
+    instagram_url VARCHAR(255)
 );
 
 CREATE TABLE artist_images
