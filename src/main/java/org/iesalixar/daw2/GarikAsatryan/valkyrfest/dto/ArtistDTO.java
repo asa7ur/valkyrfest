@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -12,4 +14,8 @@ import lombok.Setter;
 public class ArtistDTO {
     private Long id;
     private String name;
+    private String genre;
+    private String country;
+    private String logo;
+    private List<ArtistImageDTO> images;
 }

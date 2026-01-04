@@ -19,10 +19,8 @@ public class ArtistController {
 
     private final ArtistService artistService;
 
-    @GetMapping
+    @GetMapping("/artists")
     public List<ArtistDTO> getArtists() {
-        return artistService.getAllArtists().stream()
-                .map(artist -> new ArtistDTO(artist.getId(), artist.getName()))
-                .collect(Collectors.toList());
+        return artistService.getAllArtistsDTO();
     }
 }

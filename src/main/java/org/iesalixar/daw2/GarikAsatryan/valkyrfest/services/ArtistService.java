@@ -2,6 +2,8 @@ package org.iesalixar.daw2.GarikAsatryan.valkyrfest.services;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.dto.ArtistDTO;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.dto.ArtistImageDTO;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.Artist;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.ArtistImage;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.ArtistImageRepository;
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -128,5 +131,27 @@ public class ArtistService {
             fileService.deleteFile(img.getImageUrl(), ARTISTS_FOLDER);
             artistImageRepository.delete(img);
         }
+    }
+
+    @Transactional
+    public List<ArtistDTO> getAllArtistsDTO() {
+        return artistRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private ArtistDTO convertToDTO(Artist artist) {
+        List<ArtistImageDTO> imageDTOs = artist.getImages().stream()
+                .map(img -> new ArtistImageDTO(img.getId(), img.getImageUrl()))
+                .collect(Collectors.toList());
+
+        return new ArtistDTO(
+                artist.getId(),
+                artist.getName(),
+                artist.getGenre(),
+                artist.getCountry(),
+                artist.getLogo(),
+                imageDTOs
+        );
     }
 }

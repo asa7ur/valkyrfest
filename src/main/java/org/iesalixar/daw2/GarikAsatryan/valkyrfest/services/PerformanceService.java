@@ -2,6 +2,9 @@ package org.iesalixar.daw2.GarikAsatryan.valkyrfest.services;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.dto.LineupArtistDTO;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.dto.PerformanceDTO;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.dto.StageDTO;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.Performance;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.exceptions.AppException;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.PerformanceRepository;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,5 +57,31 @@ public class PerformanceService {
             return performanceRepository.searchPerformances(searchTerm, pageable);
         }
         return performanceRepository.findAll(pageable);
+    }
+
+    public List<PerformanceDTO> getAllPerformancesDTO() {
+        return performanceRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private PerformanceDTO convertToDTO(Performance p) {
+        LineupArtistDTO artistDTO = new LineupArtistDTO(
+                p.getArtist().getId(),
+                p.getArtist().getName(),
+                p.getArtist().getLogo(),
+                p.getArtist().getGenre()
+        );
+        StageDTO stageDTO = new StageDTO(
+                p.getStage().getId(),
+                p.getStage().getName()
+        );
+        return new PerformanceDTO(
+                p.getId(),
+                p.getStartTime(),
+                p.getEndTime(),
+                artistDTO,
+                stageDTO
+        );
     }
 }
