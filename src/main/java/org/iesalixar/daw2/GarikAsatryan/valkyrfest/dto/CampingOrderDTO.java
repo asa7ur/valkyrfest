@@ -24,5 +24,5 @@ public class CampingOrderDTO {
     private LocalDate birthDate;
 
     @NotNull(message = "{msg.validation.required}")
-    private Long campingTypeId; // El ID del tipo de camping
+    private Long campingTypeId;
 }

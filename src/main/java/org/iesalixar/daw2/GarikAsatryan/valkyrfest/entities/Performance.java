@@ -1,5 +1,6 @@
 package org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -38,9 +39,11 @@ public class Performance {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artist_id", nullable = false)
+    @JsonIgnoreProperties("performances")
     private Artist artist;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stage_id", nullable = false)
+    @JsonIgnoreProperties("performances")
     private Stage stage;
 }
