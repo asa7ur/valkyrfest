@@ -19,7 +19,7 @@ public class ArtistController {
 
     private final ArtistService artistService;
 
-    @GetMapping("/artists")
+    @GetMapping
     public List<ArtistDTO> getArtists() {
         return artistService.getAllArtistsDTO();
     }

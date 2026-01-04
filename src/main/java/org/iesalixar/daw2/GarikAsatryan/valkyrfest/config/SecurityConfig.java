@@ -59,7 +59,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/stripe/webhook", "/api/**")
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/register/**", "/login", "/css/**", "/js/**", "/images/**", "/uploads", "/stripe/webhook", "/api/**").permitAll()
+                        .requestMatchers("/", "/register/**", "/login", "/css/**", "/js/**", "/images/**", "/uploads/**", "/stripe/webhook", "/api/**").permitAll()
                         // Gracias a la jerarquía, solo el ADMIN puede gestionar usuarios
                         .requestMatchers("/admin/users/**", "/admin/festival/users/**").hasRole("ADMIN")
                         // Los MANAGER (y ADMIN por jerarquía) acceden al resto de la administración
