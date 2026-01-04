@@ -1,5 +1,6 @@
 package org.iesalixar.daw2.GarikAsatryan.valkyrfest.services;
 
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,55 +17,56 @@ public class FileService {
     @Value("${upload.directory:uploads}")
     private String uploadDirectory;
 
+    private static final String FULL_SUFFIX = "_full.webp";
+    private static final String THUMB_SUFFIX = "_thumb.webp";
+
     /**
-     * Guarda un archivo en el sistema de archivos.
-     *
-     * @param file      El archivo recibido desde el formulario.
-     * @param subFolder Subcarpeta dentro de uploads (ej: "artists" o "sponsors").
-     * @return El nombre del archivo guardado.
-     * @throws IOException Si ocurre un error al guardar.
+     * Saves two versions of an image: one full-size (max 1200px) and one thumbnail (max 300px).
+     * Both are converted to WebP format for maximum compression.
      */
     public String saveFile(MultipartFile file, String subFolder) throws IOException {
-        if (file.isEmpty()) {
+        if (file == null || file.isEmpty()) {
             return null;
         }
 
-        // Crear la ruta del directorio (uploads/artists, etc)
         Path uploadPath = Paths.get(uploadDirectory, subFolder);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
-        // Generar un nombre único para evitar duplicados
-        String originalFilename = file.getOriginalFilename();
-        String extension = "";
-        if (originalFilename != null && originalFilename.contains(".")) {
-            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        }
-        String fileName = UUID.randomUUID().toString() + extension;
+        // Generate a base UUID name without extension
+        String baseName = UUID.randomUUID().toString();
 
-        // Guardar el archivo físically
-        Path filePath = uploadPath.resolve(fileName);
-        Files.copy(file.getInputStream(), filePath);
+        // 1. Save Full Size Version (Big)
+        Thumbnails.of(file.getInputStream())
+                .size(1200, 1200)
+                .outputFormat("webp")
+                .outputQuality(0.80)
+                .toFile(uploadPath.resolve(baseName + FULL_SUFFIX).toFile());
 
-        return fileName;
+        // 2. Save Thumbnail Version (Small)
+        Thumbnails.of(file.getInputStream())
+                .size(300, 300)
+                .outputFormat("webp")
+                .outputQuality(0.70)
+                .toFile(uploadPath.resolve(baseName + THUMB_SUFFIX).toFile());
+
+        // Return the baseName so the database only stores one ID
+        return baseName;
     }
 
     /**
-     * Elimina un archivo físicamente del disco.
-     *
-     * @param fileName  Nombre del archivo.
-     * @param subFolder Subcarpeta donde está guardado.
+     * Deletes both the full-size and thumbnail versions from the disk.
      */
-    public void deleteFile(String fileName, String subFolder) {
-        if (fileName == null || fileName.isEmpty()) return;
+    public void deleteFile(String baseName, String subFolder) {
+        if (baseName == null || baseName.isEmpty()) return;
 
         try {
-            Path filePath = Paths.get(uploadDirectory, subFolder).resolve(fileName);
-            Files.deleteIfExists(filePath);
+            Path folderPath = Paths.get(uploadDirectory, subFolder);
+            Files.deleteIfExists(folderPath.resolve(baseName + FULL_SUFFIX));
+            Files.deleteIfExists(folderPath.resolve(baseName + THUMB_SUFFIX));
         } catch (IOException e) {
-            // Loguear error pero no detener la ejecución
-            System.err.println("Error eliminando archivo: " + fileName);
+            System.err.println("Error deleting resized images for: " + baseName);
         }
     }
 }

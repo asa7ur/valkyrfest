@@ -46,9 +46,10 @@
                                 <label class="form-label d-block fw-bold" th:text="#{msg.admin.logo.current}">Logo
                                     actual</label>
                                 <div class="position-relative d-inline-block">
-                                    <img th:src="@{'/uploads/artists/' + ${artist.logo}}"
-                                         class="img-thumbnail shadow-sm"
-                                         style="height: 100px; width: 100px; object-fit: cover;">
+                                    <img th:src="@{'/uploads/artists/' + ${artist.logo} + '_thumb.webp'}"
+                                         class="img-thumbnail shadow-sm bg-dark"
+                                         style="height: 100px; width: 100px; object-fit: contain; background-color: black !important;"
+                                         alt="Logo actual">
 
                                     <a th:href="@{/admin/festival/artists/delete-logo/{id}(id=${artist.id})}"
                                        class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
@@ -125,8 +126,9 @@
                                 <div class="row row-cols-1 row-cols-md-4 g-3">
                                     <div class="col" th:each="img : ${artist.images}">
                                         <div class="card h-100 border shadow-sm">
-                                            <img th:src="@{'/uploads/artists/' + ${img.imageUrl}}"
-                                                 class="card-img-top p-1" style="height: 150px; object-fit: cover;"
+                                            <img th:src="@{'/uploads/artists/' + ${img.imageUrl} + '_thumb.webp'}"
+                                                 class="card-img-top p-1"
+                                                 style="height: 150px; object-fit: cover;"
                                                  alt="Artist image">
                                             <div class="card-footer bg-white border-top-0 d-flex justify-content-center">
                                                 <a th:href="@{/admin/festival/artists/delete-image/{artistId}/{imageId}(artistId=${artist.id}, imageId=${img.id})}"

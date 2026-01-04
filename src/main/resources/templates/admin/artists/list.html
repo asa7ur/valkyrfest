@@ -40,12 +40,21 @@
                     <tbody>
                     <tr th:each="artist : ${artists}">
                         <td>
-                            <div th:if="${not #lists.isEmpty(artist.images)}">
-                                <img th:src="@{'/uploads/artists/' + ${artist.images[0].imageUrl}}"
-                                     class="rounded-circle border shadow-sm"
-                                     style="width: 40px; height: 40px; object-fit: cover;" alt="Artist">
+                            <div th:if="${artist.logo != null}">
+                                <img th:src="@{'/uploads/artists/' + ${artist.logo} + '_thumb.webp'}"
+                                     class="rounded-circle border shadow-sm bg-dark"
+                                     style="width: 40px; height: 40px; object-fit: contain; background-color: black !important;"
+                                     alt="Logo">
                             </div>
-                            <div th:unless="${not #lists.isEmpty(artist.images)}"
+
+                            <div th:if="${artist.logo == null and not #lists.isEmpty(artist.images)}">
+                                <img th:src="@{'/uploads/artists/' + ${artist.images[0].imageUrl} + '_thumb.webp'}"
+                                     class="rounded-circle border shadow-sm"
+                                     style="width: 40px; height: 40px; object-fit: cover;"
+                                     alt="Artist">
+                            </div>
+
+                            <div th:if="${artist.logo == null and #lists.isEmpty(artist.images)}"
                                  class="rounded-circle bg-light border d-flex align-items-center justify-content-center"
                                  style="width: 40px; height: 40px;">
                                 <i class="bi bi-person text-muted"></i>
