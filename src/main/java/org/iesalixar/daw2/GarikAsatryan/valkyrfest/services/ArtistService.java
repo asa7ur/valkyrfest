@@ -99,6 +99,7 @@ public class ArtistService {
             dto.setName(artist.getName());
             dto.setGenre(artist.getGenre());
             dto.setCountry(artist.getCountry());
+            dto.setDescription(artist.getDescription());
             dto.setLogo(artist.getLogo());
             dto.setOfficialUrl(artist.getOfficialUrl());
             dto.setInstagramUrl(artist.getInstagramUrl());
