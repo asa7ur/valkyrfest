@@ -57,12 +57,13 @@ public class ArtistService {
             artistToSave.setEmail(artist.getEmail());
             artistToSave.setGenre(artist.getGenre());
             artistToSave.setCountry(artist.getCountry());
-
-            // CORRECCIÓN: Añadidos los nuevos campos para que se actualicen
             artistToSave.setDescription(artist.getDescription());
-            artistToSave.setYoutubeUrl(artist.getYoutubeUrl());
-            artistToSave.setSpotifyUrl(artist.getSpotifyUrl());
+            artistToSave.setOfficialUrl(artist.getOfficialUrl());
             artistToSave.setInstagramUrl(artist.getInstagramUrl());
+            artistToSave.setTiktokUrl(artist.getTiktokUrl());
+            artistToSave.setYoutubeUrl(artist.getYoutubeUrl());
+            artistToSave.setTidalUrl(artist.getTidalUrl());
+            artistToSave.setSpotifyUrl(artist.getSpotifyUrl());
 
         } else {
             artistToSave = artist;
@@ -99,12 +100,13 @@ public class ArtistService {
             dto.setGenre(artist.getGenre());
             dto.setCountry(artist.getCountry());
             dto.setLogo(artist.getLogo());
-            dto.setDescription(artist.getDescription());
-            dto.setYoutubeUrl(artist.getYoutubeUrl());
-            dto.setSpotifyUrl(artist.getSpotifyUrl());
+            dto.setOfficialUrl(artist.getOfficialUrl());
             dto.setInstagramUrl(artist.getInstagramUrl());
+            dto.setTiktokUrl(artist.getTiktokUrl());
+            dto.setYoutubeUrl(artist.getYoutubeUrl());
+            dto.setTidalUrl(artist.getTidalUrl());
+            dto.setSpotifyUrl(artist.getSpotifyUrl());
 
-            // CORRECCIÓN: Mapear a ArtistImageDTO para que coincida con el frontend
             dto.setImages(artist.getImages().stream()
                     .map(img -> new ArtistImageDTO(img.getId(), img.getImageUrl()))
                     .collect(Collectors.toList()));

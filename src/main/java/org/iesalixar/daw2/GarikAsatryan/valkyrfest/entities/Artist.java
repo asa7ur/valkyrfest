@@ -51,14 +51,23 @@ public class Artist {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "youtube_url")
-    private String youtubeUrl;
-
-    @Column(name = "spotify_url")
-    private String spotifyUrl;
+    @Column(name = "official_url")
+    private String officialUrl;
 
     @Column(name = "instagram_url")
     private String instagramUrl;
+
+    @Column(name = "tiktok_url")
+    private String tiktokUrl;
+
+    @Column(name = "youtube_url")
+    private String youtubeUrl;
+
+    @Column(name = "tidal_url")
+    private String tidalUrl;
+
+    @Column(name = "spotify_url")
+    private String spotifyUrl;
 
     @Column(name = "logo")
     private String logo;

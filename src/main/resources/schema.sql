@@ -152,9 +152,12 @@ CREATE TABLE artists
     country       VARCHAR(100) NOT NULL,
     description   TEXT,
     logo          VARCHAR(255),
+    official_url  VARCHAR(255),
+    instagram_url VARCHAR(255),
+    tiktok_url    VARCHAR(255),
     youtube_url   VARCHAR(255),
-    spotify_url   VARCHAR(255),
-    instagram_url VARCHAR(255)
+    tidal_url     VARCHAR(255),
+    spotify_url   VARCHAR(255)
 );
 
 CREATE TABLE artist_images

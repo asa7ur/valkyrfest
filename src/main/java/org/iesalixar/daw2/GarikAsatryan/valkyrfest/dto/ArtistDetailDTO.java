@@ -16,8 +16,11 @@ public class ArtistDetailDTO {
     private String country;
     private String logo;
     private String description;
-    private String youtubeUrl;
-    private String spotifyUrl;
+    private String officialUrl;
     private String instagramUrl;
+    private String tiktokUrl;
+    private String youtubeUrl;
+    private String tidalUrl;
+    private String spotifyUrl;
     private List<ArtistImageDTO> images;
 }
