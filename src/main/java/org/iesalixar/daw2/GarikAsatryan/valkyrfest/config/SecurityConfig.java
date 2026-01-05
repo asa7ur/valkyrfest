@@ -4,16 +4,21 @@ import lombok.RequiredArgsConstructor;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.handlers.CustomLoginSuccessHandler;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.handlers.CustomOAuth2FailureHandler;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.handlers.CustomOAuth2SuccessHandler;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.security.JwtAuthenticationFilter;
 import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -31,9 +36,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
-    private final CustomLoginSuccessHandler customLoginSuccessHandler;
-    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
-    private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
+    private final JwtAuthenticationFilter jwtAuthFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -51,42 +54,33 @@ public class SecurityConfig {
         return roleHierarchy;
     }
 
+    /**
+     * Bean necesario para el AuthController (Login de Angular)
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/stripe/webhook", "/api/**")
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/register/**", "/login", "/css/**", "/js/**", "/images/**", "/uploads/**", "/stripe/webhook", "/api/**").permitAll()
-                        // Gracias a la jerarquía, solo el ADMIN puede gestionar usuarios
-                        .requestMatchers("/admin/users/**", "/admin/festival/users/**").hasRole("ADMIN")
-                        // Los MANAGER (y ADMIN por jerarquía) acceden al resto de la administración
-                        .requestMatchers("/admin/**").hasRole("MANAGER")
+                        // Rutas que pueden ser públicas (para ver precios antes de loguear, etc.)
+                        .requestMatchers("/api/auth/**", "/api/artists/**", "/api/ticket-types/**", "/api/camping-types/**").permitAll()
+
+                        // Recursos estáticos
+                        .requestMatchers("/", "/register/**", "/login", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(exception -> exception
-                        .accessDeniedPage("/error/403")
-                )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .successHandler(customLoginSuccessHandler)
-                        .permitAll()
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login")
-                        .successHandler(customOAuth2SuccessHandler)
-                        .failureHandler(customOAuth2FailureHandler)
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                        .permitAll()
-                )
-                .authenticationProvider(authenticationProvider());
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -94,7 +88,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200")); // Origen de tu Angular
+        // Permitimos específicamente el origen de tu frontend Angular
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
         configuration.setAllowCredentials(true);
@@ -108,7 +103,6 @@ public class SecurityConfig {
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
-        // Usamos el método passwordEncoder() definido arriba
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }

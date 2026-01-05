@@ -1,8 +1,8 @@
 package org.iesalixar.daw2.GarikAsatryan.valkyrfest.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.iesalixar.daw2.GarikAsatryan.valkyrfest.dto.TicketTypeDTO;
-import org.iesalixar.daw2.GarikAsatryan.valkyrfest.repositories.TicketTypeRepository;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.dto.CampingTypeDTO;
+import org.iesalixar.daw2.GarikAsatryan.valkyrfest.services.CampingTypeService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,16 +11,17 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/ticket-types")
+@RequestMapping("/api/camping-types")
 @CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
-public class TicketController {
-    private final TicketTypeRepository ticketTypeRepository;
+public class CampingTypeController {
+
+    private final CampingTypeService campingTypeService;
 
     @GetMapping
-    public List<TicketTypeDTO> getTickets() {
-        return ticketTypeRepository.findAll().stream()
-                .map(t -> new TicketTypeDTO(t.getId(), t.getName(), t.getPrice()))
+    public List<CampingTypeDTO> getCampingTypes() {
+        return campingTypeService.getAllCampingTypes().stream()
+                .map(c -> new CampingTypeDTO(c.getId(), c.getName(), c.getPrice()))
                 .toList();
     }
 }
