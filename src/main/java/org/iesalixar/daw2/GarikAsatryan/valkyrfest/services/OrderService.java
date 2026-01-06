@@ -27,7 +27,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
-    private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final TicketTypeRepository ticketTypeRepository;
     private final CampingTypeRepository campingTypeRepository;
