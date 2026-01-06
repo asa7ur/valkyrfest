@@ -1,5 +1,7 @@
 package org.iesalixar.daw2.GarikAsatryan.valkyria.controllers;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.iesalixar.daw2.GarikAsatryan.valkyria.dto.UserRegistrationDTO;
@@ -24,7 +26,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200") // Permite peticiones desde Angular
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -36,23 +38,31 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
-        // 1. Autenticar credenciales (usa el email según tu CustomUserDetailsService)
+    public ResponseEntity<?> login(@RequestBody Map<String, String> request, HttpServletResponse response) {
+        // 1. Autenticar credenciales
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.get("username"), request.get("password"))
         );
 
-        // 2. Si es correcto, cargar el usuario y generar Token
+        // 2. Cargar usuario y generar Token
         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.get("username"));
         final String jwt = jwtService.generateToken(userDetails);
 
-        // 3. Responder a Angular
-        Map<String, Object> response = new HashMap<>();
-        response.put("token", jwt);
-        response.put("username", userDetails.getUsername());
-        response.put("roles", userDetails.getAuthorities());
+        // 3. Crear Cookie para Thymeleaf (Administración)
+        Cookie jwtCookie = new Cookie("jwt", jwt);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(24 * 60 * 60); // 1 día de duración
+        // jwtCookie.setSecure(true); // Descomentar en producción (HTTPS)
+        response.addCookie(jwtCookie);
 
-        return ResponseEntity.ok(response);
+        // 4. Responder a Angular con el JSON esperado
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("token", jwt);
+        responseBody.put("username", userDetails.getUsername());
+        responseBody.put("roles", userDetails.getAuthorities());
+
+        return ResponseEntity.ok(responseBody);
     }
 
     @PostMapping("/register")

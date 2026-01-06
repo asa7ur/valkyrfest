@@ -1,9 +1,6 @@
 package org.iesalixar.daw2.GarikAsatryan.valkyria.config;
 
 import lombok.RequiredArgsConstructor;
-import org.iesalixar.daw2.GarikAsatryan.valkyria.handlers.CustomLoginSuccessHandler;
-import org.iesalixar.daw2.GarikAsatryan.valkyria.handlers.CustomOAuth2FailureHandler;
-import org.iesalixar.daw2.GarikAsatryan.valkyria.handlers.CustomOAuth2SuccessHandler;
 import org.iesalixar.daw2.GarikAsatryan.valkyria.security.JwtAuthenticationFilter;
 import org.iesalixar.daw2.GarikAsatryan.valkyria.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
@@ -49,14 +46,10 @@ public class SecurityConfig {
     @Bean
     public RoleHierarchy roleHierarchy() {
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        String hierarchy = "ROLE_ADMIN > ROLE_MANAGER";
-        roleHierarchy.setHierarchy(hierarchy);
+        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_MANAGER");
         return roleHierarchy;
     }
 
-    /**
-     * Bean necesario para el AuthController (Login de Angular)
-     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
@@ -71,10 +64,13 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/stripe/**").permitAll()
-                        .requestMatchers("/api/**", "/api/auth/**", "/api/artists/**", "/api/ticket-types/**", "/api/camping-types/**").permitAll()
-                        .requestMatchers("/", "/register/**", "/login", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
+                        // Permitimos el acceso a la API y recursos estáticos
+                        .requestMatchers("/", "/register/**", "/login", "/css/**", "/js/**", "/images/**", "/uploads/**", "/stripe/**", "/api/**").permitAll()
 
+                        // Protegemos explícitamente la zona de administración de Thymeleaf
+                        .requestMatchers("/admin/**").hasAnyRole("ADMIN", "MANAGER")
+
+                        // Cualquier otra petición requiere estar autenticado
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
@@ -86,10 +82,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Permitimos específicamente el origen de tu frontend Angular
+        // Permitimos el origen de Angular
         configuration.setAllowedOrigins(List.of("http://localhost:4200"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // Es vital permitir estos headers para que el interceptor de Angular funcione
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
+        // Necesario para que las cookies de sesión/JWT puedan viajar entre puertos
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
