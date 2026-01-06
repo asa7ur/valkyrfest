@@ -46,8 +46,8 @@ public class PaymentService {
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setClientReferenceId(order.getId().toString())
-                .setSuccessUrl(appUrl + "/order/success/" + order.getId())
-                .setCancelUrl(appUrl + "/order/checkout")
+                .setSuccessUrl(appUrl + "/purchase/success")
+                .setCancelUrl(appUrl + "/purchase/checkout")
                 .addLineItem(
                         SessionCreateParams.LineItem.builder()
                                 .setQuantity(1L)

@@ -71,10 +71,8 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        // Rutas que pueden ser públicas (para ver precios antes de loguear, etc.)
+                        .requestMatchers("/stripe/**").permitAll()
                         .requestMatchers("/api/auth/**", "/api/artists/**", "/api/ticket-types/**", "/api/camping-types/**").permitAll()
-
-                        // Recursos estáticos
                         .requestMatchers("/", "/register/**", "/login", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
 
                         .anyRequest().authenticated()
