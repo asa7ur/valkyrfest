@@ -17,7 +17,7 @@
         <div class="col-md-2">
             <label class="form-label">Tipo Doc.</label>
             <select th:name="|tickets[${index}].documentType|" class="form-select" required>
-                <option th:each="type : ${T(org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.DocumentType).values()}"
+                <option th:each="type : ${T(org.iesalixar.daw2.GarikAsatryan.valkyria.entities.DocumentType).values()}"
                         th:value="${type}" th:text="${type}"
                         th:selected="${item != null && item.documentType == type}"></option>
             </select>
@@ -63,7 +63,7 @@
         <div class="col-md-2">
             <label class="form-label">Tipo Doc.</label>
             <select th:name="|campings[${index}].documentType|" class="form-select" required>
-                <option th:each="type : ${T(org.iesalixar.daw2.GarikAsatryan.valkyrfest.entities.DocumentType).values()}"
+                <option th:each="type : ${T(org.iesalixar.daw2.GarikAsatryan.valkyria.entities.DocumentType).values()}"
                         th:value="${type}" th:text="${type}"
                         th:selected="${item != null && item.documentType == type}"></option>
             </select>

@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.iesalixar.daw2.GarikAsatryan</groupId>
-    <artifactId>valkyrfest</artifactId>
+    <artifactId>valkyria</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>valkyrfest</name>
-    <description>Garik Asatryan - Aplicación web para el festival Valkyrfest</description>
+    <name>valkyria</name>
+    <description>Garik Asatryan - Aplicación web para el festival valkyria</description>
     <url/>
     <licenses>
         <license/>
